@@ -37,7 +37,7 @@ An example of the package can be seen below
 
     from ldrawpy import LDRColour
 
-    # Open a PFx Brick session instance
+    # Create a white colour using LDraw colour code 15 for white
     mycolour = LDRColour(15)
     print(mycolour)
 

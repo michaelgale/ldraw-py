@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Learn more: https://github.com/fx-bricks/pfx-brick-py/setup.py
+# Learn more: https://github.com/michaelgale/ldraw-py
 
 import os
 import sys

@@ -162,7 +162,7 @@ class LDRPart:
             + MatStr(tup)
             + ("%s\n" % name)
         )
-        if ext == ".ldr":
+        if self.wrapcallout and ext == ".ldr":
             return "0 !LPUB CALLOUT BEGIN\n" + s + "0 !LPUB CALLOUT END\n"
         return s
 

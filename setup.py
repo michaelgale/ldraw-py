@@ -1,44 +1,62 @@
-import io
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Learn more: https://github.com/fx-bricks/pfx-brick-py/setup.py
+
 import os
-import re
+import sys
+import setuptools
 
-from setuptools import find_packages
-from setuptools import setup
+PACKAGE_NAME = 'ldrawpy'
+MINIMUM_PYTHON_VERSION = '3.6'
+
+def check_python_version():
+    """Exit when the Python version is too low."""
+    if sys.version < MINIMUM_PYTHON_VERSION:
+        sys.exit("Python {0}+ is required.".format(MINIMUM_PYTHON_VERSION))
 
 
-def read(filename):
-    filename = os.path.join(os.path.dirname(__file__), filename)
-    text_type = type(u"")
-    with io.open(filename, mode="r", encoding='utf-8') as fd:
-        return re.sub(text_type(r':[a-z]+:`~?(.*?)`'), text_type(r'``\1``'), fd.read())
+def read_package_variable(key, filename='__init__.py'):
+    """Read the value of a variable from the package without importing."""
+    module_path = os.path.join(PACKAGE_NAME, filename)
+    with open(module_path) as module:
+        for line in module:
+            parts = line.strip().split(' ', 2)
+            if parts[:-1] == [key, '=']:
+                return parts[-1].strip("'")
+    sys.exit("'{0}' not found in '{1}'".format(key, module_path))
 
 
-setup(
-    name="ldraw-py",
-    version="0.1.0",
-    url="https://github.com/michaelgale/ldraw-py",
+def build_description():
+    """Build a description for the project from documentation files."""
+    try:
+        readme = open("README.rst").read()
+        changelog = open("CHANGELOG.rst").read()
+    except IOError:
+        return "<placeholder>"
+    else:
+        return readme + '\n' + changelog
+
+
+check_python_version()
+
+setuptools.setup(
+    name=read_package_variable('__project__'),
+    version=read_package_variable('__version__'),
+    description="A python utility package for creating, modifying, and reading LDraw files and data structures.",
+    url='https://github.com/michaelgale/ldraw-py',
+    author='Michael Gale',
+    author_email='michael@fxbricks.com',
+    packages=setuptools.find_packages(),
+    long_description=build_description(),
     license='MIT',
-
-    author="Michael Gale",
-    author_email="michael@fxbricks.com",
-
-    description="A utility package for creating, modifying, and reading LDraw files and data structures.",
-    long_description=read("README.rst"),
-
-    packages=find_packages(exclude=('tests',)),
-
-    install_requires=[],
-
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
-        'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
+        'Development Status :: 3 - Alpha',
+        'Natural Language :: English',
+        'Operating System :: OS Independent',
         'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: MIT License'
     ],
+    install_requires=['fxgeometry']
 )

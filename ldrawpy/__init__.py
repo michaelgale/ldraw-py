@@ -10,5 +10,5 @@ VERSION = __project__ + '-' + __version__
 script_dir = os.path.dirname(__file__)
 
 from ldrawpy import *
-from ldrcolour import LDRColour
-from ldrprimitives import LDRAttrib, LDRHeader, LDRLine, LDRTriangle, LDRQuad, LDRPart
+from .ldrcolour import LDRColour
+from .ldrprimitives import LDRAttrib, LDRHeader, LDRLine, LDRTriangle, LDRQuad, LDRPart

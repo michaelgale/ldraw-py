@@ -25,6 +25,7 @@
 
 import os
 import string
+from .ldrawpy import *
 from ldrawpy.ldrcolourdict import *
 
 LDR_ANY_COLOUR_FILL = ["FD9E99", "FDAF77", "F7FF94", "ACFFA7", "A1B9FF"]
@@ -279,6 +280,13 @@ class LDRColour(object):
         for code, label in LDR_COLOUR_NAME.items():
             if label.lower() == colourStr.lower():
                 return code
+        if len(colourStr) == 6 or len(colourStr) == 7:
+            hs = colourStr.lstrip("#").lower()
+            if not all(c in string.hexdigits for c in hs):
+                return LDR_DEF_COLOUR
+            for code, rgbhex in LDR_COLOUR_RGB.items():
+                if hs == rgbhex.lower():
+                    return code
         return LDR_DEF_COLOUR
 
     @staticmethod

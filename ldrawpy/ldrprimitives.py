@@ -24,9 +24,11 @@
 # LDraw primitives
 
 import os
+import tempfile
 from functools import reduce
 
 from fxgeometry import Identity, Vector, Vector2D, Matrix
+from .ldrawpy import *
 from ldrawpy.ldrhelpers import VectorStr, MatStr
 
 
@@ -166,11 +168,12 @@ class LDRPart:
 
 
 def GeneratePartImage(
-    name, colour=LDR_DEF_COLOUR, size=THUMB_SIZE, outpath="./", filename=""
+    name, colour=LDR_DEF_COLOUR, size=512, outpath="./", filename=""
 ):
 
     p = LDRPart(colour, "mm")
     p.name = name
+    LDR_TEMP_PATH = tempfile.gettempdir() + os.sep + "temp.ldr"
     f = open(LDR_TEMP_PATH, "w")
     f.write(str(p))
     f.close()

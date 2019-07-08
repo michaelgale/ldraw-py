@@ -27,6 +27,7 @@
 import os
 import copy
 from fxgeometry import Identity, Vector, Vector2D
+from .ldrawpy import *
 from ldrawpy.ldrprimitives import *
 from ldrawpy.ldrhelpers import VectorStr, MatStr, GetCircleSegments
 from p2t import CDT

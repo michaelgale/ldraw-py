@@ -3,9 +3,13 @@ language: python
 python:
   - "3.6"
 
+before_script:
+    - wget https://github.com/michaelgale/fxgeometry/archive/master.zip -O /tmp/fxgeometry.zip
+    - tar -xvf /tmp/fxgeometry.zip
+    - python ./fxgeometry-master/setup.py install
+
 
 script:
     - python setup.py install
     - cd tests
     - pytest
-    

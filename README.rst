@@ -4,9 +4,8 @@ ldraw-py
 .. image:: https://img.shields.io/badge/license-MIT-blue.svg
     :target: https://github.com/fx-bricks/pfx-brick-py/blob/master/LICENSE.md
 
-.. image:: https://travis-ci.com/michaelgale/ldraw-py.png
-   :target: https://travis-ci.com/michaelgale/ldraw-py
-   :alt: Latest Travis CI build status
+.. image:: https://travis-ci.com/michaelgale/ldraw-py.svg?token=BAxTSXRpn67HJfRpasmd&branch=master
+    :target: https://travis-ci.com/michaelgale/ldraw-py
 
 A utility package for creating, modifying, and reading LDraw files and data structures.
 

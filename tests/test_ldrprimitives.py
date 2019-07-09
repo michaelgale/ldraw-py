@@ -28,3 +28,25 @@ def test_ldrtriangle():
     assert t1.p3.z == -7
     ts = str(t1).rstrip()
     assert ts == "3 0 2 3 -7 7 13 -7 12 3 -7"
+
+def test_ldrquad():
+    q1 = LDRQuad(0)
+    q1.p2 = Vector(0, 5, 0)
+    q1.p3 = Vector(20, 5, 0)
+    q1.p4 = Vector(20, 0, 0)
+    q1.translate(Vector(7, 3, 8))
+    assert q1.p4.x == 27
+    assert q1.p4.y == 3
+    assert q1.p4.z == 8
+    qs = str(q1).rstrip()
+    assert qs == "4 0 7 3 8 7 8 8 27 8 8 27 3 8"
+
+def test_ldrpart():
+    p1 = LDRPart(0)
+    p1.attrib.loc = Vector(5, 7, 8)
+    p1.name = '3002'
+    assert p1.attrib.loc.x == 5
+    assert p1.attrib.loc.y == 7
+    assert p1.attrib.loc.z == 8
+    ps = str(p1).rstrip()
+    assert ps == "1 0 5 7 8 1 0 0 0 1 0 0 0 1 3002.dat"

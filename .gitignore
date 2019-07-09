@@ -3,6 +3,13 @@
 # C extensions
 *.so
 
+# OS litter
+.DS_Store
+Desktop.ini
+._*
+Thumbs.db
+.Trashes
+
 # Packages
 *.egg
 *.egg-info

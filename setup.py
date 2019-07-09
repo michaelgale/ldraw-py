@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Learn more: https://github.com/fx-bricks/pfx-brick-py/setup.py
+# Learn more: https://github.com/michaelgale/ldraw-py
 
 import os
 import sys
 import setuptools
 
-PACKAGE_NAME = 'pfxbrick'
+PACKAGE_NAME = 'ldrawpy'
 MINIMUM_PYTHON_VERSION = '3.6'
 
 def check_python_version():
@@ -43,10 +43,10 @@ check_python_version()
 setuptools.setup(
     name=read_package_variable('__project__'),
     version=read_package_variable('__version__'),
-    description="A python API for host control of USB connected PFx Bricks.",
-    url='https://github.com/fx-bricks/pfx-brick-py',
-    author='Fx Bricks Inc.',
-    author_email='info@fxbricks.com',
+    description="A python utility package for creating, modifying, and reading LDraw files and data structures.",
+    url='https://github.com/michaelgale/ldraw-py',
+    author='Michael Gale',
+    author_email='michael@fxbricks.com',
     packages=setuptools.find_packages(),
     long_description=build_description(),
     license='MIT',
@@ -58,5 +58,5 @@ setuptools.setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License'
     ],
-    install_requires=['hidapi']
+    install_requires=['fxgeometry']
 )

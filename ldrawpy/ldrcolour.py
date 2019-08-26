@@ -44,9 +44,9 @@ def FillColoursFromLDRCode(ldrCode):
     elif ldrCode == LDR_MONO_COLOUR:
         fillColours = [
             LDR_COLOUR_RGB[15],
+            LDR_COLOUR_RGB[151],
             LDR_COLOUR_RGB[71],
             LDR_COLOUR_RGB[72],
-            LDR_COLOUR_RGB[0],
         ]
     elif ldrCode == LDR_BLKWHT_COLOUR:
         fillColours = [LDR_COLOUR_RGB[0], LDR_COLOUR_RGB[15]]

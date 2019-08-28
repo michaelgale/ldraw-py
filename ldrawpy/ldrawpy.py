@@ -63,8 +63,7 @@ def BrickNameStrip(s, level=0):
         sn = sn.replace("1 And 1/3", "1-1/3")
         sn = sn.replace("1 and 1/3", "1-1/3")
         sn = sn.replace("1 & 1/3", "1-1/3")
-        sn = sn.replace("Liftarm", "liftarm")
-
+        sn = sn.replace("with Headlight", "Erling")
     elif level == 1:
         sn = sn.replace("with ", "w/")
         sn = sn.replace("With ", "w/")

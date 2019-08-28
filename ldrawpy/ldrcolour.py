@@ -28,7 +28,7 @@ import string
 from .ldrawpy import *
 from ldrawpy.ldrcolourdict import *
 
-LDR_ANY_COLOUR_FILL = ["FD9E99", "FDAF77", "F7FF94", "ACFFA7", "A1B9FF"]
+LDR_ANY_COLOUR_FILL = ["E6E6E6", "FD908F", "8EDAFF", "FFFF66"]
 
 
 def FillColoursFromLDRCode(ldrCode):
@@ -44,9 +44,9 @@ def FillColoursFromLDRCode(ldrCode):
     elif ldrCode == LDR_MONO_COLOUR:
         fillColours = [
             LDR_COLOUR_RGB[15],
+            LDR_COLOUR_RGB[151],
             LDR_COLOUR_RGB[71],
             LDR_COLOUR_RGB[72],
-            LDR_COLOUR_RGB[0],
         ]
     elif ldrCode == LDR_BLKWHT_COLOUR:
         fillColours = [LDR_COLOUR_RGB[0], LDR_COLOUR_RGB[15]]

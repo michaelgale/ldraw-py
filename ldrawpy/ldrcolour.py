@@ -28,7 +28,7 @@ import string
 from .ldrawpy import *
 from ldrawpy.ldrcolourdict import *
 
-LDR_ANY_COLOUR_FILL = ["E6E6E6", "FD908F", "8EDAFF", "FFFF66"]
+LDR_ANY_COLOUR_FILL = ["E6E6E6", "8EDAFF", "FFFF66", "FD908F"]
 
 
 def FillColoursFromLDRCode(ldrCode):

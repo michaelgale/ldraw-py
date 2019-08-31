@@ -135,6 +135,7 @@ BL_TO_LDR_COLOUR = {
     67: 80,
     70: 81,
     65: 82,
+    89: 85,
 }
 
 LDR_COLOUR_NAME = {
@@ -177,12 +178,12 @@ LDR_COLOUR_NAME = {
     73: "Medium Blue",
     74: "Medium Green",
     77: "Light Pink",
-    78: "Light Flesh",
-    84: "Medium Dark Flesh",
-    85: "Medium Lilac",
+    78: "Light Nougat",
+    84: "Medium Nougat",
+    85: "Dark Purple",
     86: "Dark Flesh",
     89: "Blue Violet",
-    92: "Flesh",
+    92: "Nougat",
     100: "Light Salmon",
     110: "Violet",
     112: "Medium Violet",
@@ -313,7 +314,7 @@ LDR_COLOUR_RGB = {
     77: "fecccf",  #'Light Pink',
     78: "f6d7b3",  #'Light Flesh',
     84: "cc702a",  #'Medium Dark Flesh',
-    85: "3f3691",  #'Medium Lilac',
+    85: "3f3691",  #'Medium Lilac', / Dark Purple
     86: "7c503a",  #'Dark Flesh',
     89: "4c61db",  #'Blue Violet',
     92: "d09168",  #'Flesh',

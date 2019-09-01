@@ -136,6 +136,7 @@ BL_TO_LDR_COLOUR = {
     70: 81,
     65: 82,
     89: 85,
+    46: 21,
 }
 
 LDR_COLOUR_NAME = {
@@ -146,8 +147,8 @@ LDR_COLOUR_NAME = {
     4: "Red",
     5: "Dark Pink",
     6: "Brown",
-    7: "Light Grey",
-    8: "Dark Grey",
+    7: "Old Light Grey",
+    8: "Old Dark Grey",
     9: "Light Blue",
     10: "Bright Green",
     11: "Light Turquoise",
@@ -160,6 +161,7 @@ LDR_COLOUR_NAME = {
     18: "Light Yellow",
     19: "Tan",
     20: "Light Violet",
+    21: "Glow in Dark Opaque",
     22: "Purple",
     23: "Dark Blue Violet",
     24: "Outline",
@@ -294,6 +296,7 @@ LDR_COLOUR_RGB = {
     18: "fbe696",  #'Light Yellow',
     19: "e4cd9e",  #'Tan',
     20: "c9cae2",  #'Light Violet',
+    21: "ECE8DE",  #'Glow in Dark Opaque'
     22: "81007b",  #'Purple',
     23: "2032b0",  #'Dark Blue Violet',
     24: "101010",  #'Outline',

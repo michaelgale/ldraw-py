@@ -143,7 +143,7 @@ def arrows_for_step(arrow_ctx, step):
             if "!ARROW" in line:
                 if in_arrow == False and "BEGIN" in line:
                     in_arrow = True
-                    arrow_ctx.offset.from_tuple((float(ls[3]), float(ls[4]), float(ls[5])))
+                    arrow_ctx.offset = Vector(float(ls[3]), float(ls[4]), float(ls[5]))
                 elif in_arrow and "END" in line:
                     in_arrow = False
                     continue

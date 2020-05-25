@@ -62,6 +62,10 @@ def FillColoursFromLDRCode(ldrCode):
         fillColours = [LDR_COLOUR_RGB[2], LDR_COLOUR_RGB[70]]
     elif ldrCode == LDR_BLUBRN_COLOUR:
         fillColours = [LDR_COLOUR_RGB[1], LDR_COLOUR_RGB[70]]
+    elif ldrCode == LDR_BLUBLU_COLOUR:
+        fillColours = [LDR_COLOUR_RGB[1], LDR_COLOUR_RGB[73]]
+    elif ldrCode == LDR_DKREDBLU_COLOUR:
+        fillColours = [LDR_COLOUR_RGB[272], LDR_COLOUR_RGB[320]]
 
     elif ldrCode == LDR_BRGREEN_COLOUR:
         fillColours = [LDR_COLOUR_RGB[10], LDR_COLOUR_RGB[326]]
@@ -104,6 +108,11 @@ def FillTitlesFromLDRCode(ldrCode):
         fillTitles = [LDR_COLOUR_NAME[2], LDR_COLOUR_NAME[70]]
     elif ldrCode == LDR_BLUBRN_COLOUR:
         fillTitles = [LDR_COLOUR_NAME[1], LDR_COLOUR_NAME[70]]
+    elif ldrCode == LDR_BLUBLU_COLOUR:
+        fillTitles = [LDR_COLOUR_NAME[1], LDR_COLOUR_NAME[73]]
+    elif ldrCode == LDR_DKREDBLU_COLOUR:
+        fillTitles = [LDR_COLOUR_NAME[272], LDR_COLOUR_NAME[320]]
+
     elif ldrCode == LDR_BRGREEN_COLOUR:
         fillTitles = [LDR_COLOUR_NAME[10], LDR_COLOUR_NAME[326]]
     elif ldrCode == LDR_LAVENDER_COLOUR:
@@ -260,6 +269,8 @@ class LDRColour(object):
             return "Light/Med Pink"
         elif ldrCode == LDR_LTYLW_COLOUR:
             return "Br Light Yellow/Light Nougat"
+        elif ldrCode == LDR_BLUBLU_COLOUR:
+            return "Blue/Med Blue"
         return ""
 
     @staticmethod

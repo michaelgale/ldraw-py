@@ -1,0 +1,266 @@
+#
+# Colour definitions
+#
+L1: "#1A1E24"
+L2: "#1A1E24"
+L3: "#1A1E24"
+DARK: "#1A1E24"
+LIGHT: "#F6FDFF"
+BLACK: "#000000"
+WHITE: "#FFFFFF"
+PLI: "#D4F9FE"
+BLUE: "#204080"
+
+# 
+# Font definitions
+#
+NUM_FONT: British-Rail-Light
+QTY_FONT: IKEA-Sans-Regular
+
+#
+# Style dictionary containing all the style sheet styles
+#
+styles:
+  
+  COLUMN_STYLE:
+    gutter-width: 0.2 in
+    top-margin: 0.0 in
+    bottom-margin: 0.0 in
+    line-width: 0.025 in
+    line-colour: ${WHITE}
+
+  PAGE_NUM_STYLE:
+    font: ${NUM_FONT}
+    font-size: 18
+    font-colour: ${WHITE}
+    horz-align: right
+    vert-align: top
+
+  STEP_NUM_STYLE:
+    font: ${NUM_FONT}
+    font-size: 32
+    font-colour: ${WHITE}
+    horz-align: right
+    vert-align: top
+    top-padding: 0.05 in
+    right-padding: 0.15 in
+
+  STEP_L0_STYLE:
+    bottom-padding: 0.35 in
+    right-padding: 0.025 in
+    background-fill: True
+    background-colour: ${DARK}
+
+  STEP_L1_STYLE:
+    bottom-padding: 0.25 in
+    right-padding: 0.025 in
+    background-fill: True
+    background-colour: ${L1}
+
+  STEP_L2_STYLE:
+    bottom-padding: 0.15 in
+    right-padding: 0.025 in
+    background-fill: True
+    background-colour: ${L2}
+
+  STEP_L3_STYLE:
+    bottom-padding: 0.15 in
+    right-padding: 0.025 in
+    background-fill: True
+    background-colour: ${L3}
+
+  STEP_ASSEM_SYTLE:
+    bottom-padding: 0.5 in
+
+  STEP_ASSEM_IMAGE_STYLE:
+    top-padding: 0
+    bottom-padding: 0
+    left-padding: 0
+    right-padding: 0
+
+  CALLOUT_STYLE_L1:
+    font: ${NUM_FONT}
+    font-size: 20
+    font-colour: ${WHITE}
+    background-fill: True
+    background-colour: ${DARK}
+    border-colour: ${WHITE}
+    border-outline: True
+    border-width: 0.015 inch
+    border-radius: 0.00 inch
+    left-padding: 0.05 inch
+    right-padding: 0.1 inch
+    top-padding: 0.1 inch
+    bottom-padding: 0.1 inch
+    vert-align: top
+    horz-align: left
+
+  CALLOUT_STYLE_L2:
+    font: ${NUM_FONT}
+    font-size: 20
+    font-colour: ${WHITE}
+    background-fill: True
+    background-colour: ${DARK}
+    border-colour: ${WHITE}
+    border-outline: True
+    border-width: 0.015 inch
+    border-radius: 0.00 inch
+    left-padding: 0.05 inch
+    right-padding: 0.1 inch
+    top-padding: 0.1 inch
+    bottom-padding: 0.1 inch
+    vert-align: top
+    horz-align: left
+
+  CALLOUT_STYLE_L3:
+    font: ${NUM_FONT}
+    font-size: 20
+    font-colour: ${WHITE}
+    background-fill: True
+    background-colour: ${DARK}
+    border-colour: ${WHITE}
+    border-outline: True
+    border-width: 0.015 inch
+    border-radius: 0.0 inch
+    left-padding: 0.05 inch
+    right-padding: 0.1 inch
+    top-padding: 0.1 inch
+    bottom-padding: 0.1 inch
+    vert-align: top
+    horz-align: left
+
+  CALLOUT_STEP_NUM_STYLE:
+    font: ${NUM_FONT}
+    font-size: 20
+    font-colour: ${WHITE}
+    horz-align: centre
+    vert-align: top
+    top-padding: 0.05 inch
+    right-padding: 0.05 inch
+    left-padding: 0.05 inch 
+
+  CALLOUT_ASSEM_IMAGE_STYLE:
+    top-padding: 0 in
+    bottom-padding: 0
+    left-padding: 0.05 in
+    right-padding: 0.05 in
+    top-margin: 0.1 inch    
+
+  CALLOUT_STEP_ASSEM_STYLE:
+    horz-align: left
+    vert-align: top
+    bottom-padding: 0.0
+    right-padding: 0.0
+    left-padding: 0.0 
+
+  CALLOUT_QTY_STYLE:
+    font: ${QTY_FONT}
+    font-size: 24
+    font-colour: ${WHITE}
+    horz-align: left
+    vert-align: bottom
+    right-padding: 0.0 inch
+    left-padding: 0.15 inch
+
+  CALLOUT_ARROW_STYLE:
+    line-colour: ${WHITE}
+    border-colour: ${DARK}
+    border-outline: True
+    border-width: 0.015 inch
+    line-width: 0.015 inch
+    length: 28
+    width: 12
+    arrow-style: taper
+
+  STEP_PLI_STYLE :
+      font: ${NUM_FONT}
+      font-size: 10
+      font-colour: ${WHITE}
+      background-fill: True
+      background-colour: ${DARK}
+      border-colour: ${WHITE}
+      border-outline: True
+      border-width: 0.015  inch
+      border-radius: 0.0  inch
+      left-padding: 0.1  inch
+      right-padding: 0.1  inch
+      top-padding: 0.1  inch
+      vert-align: bottom
+
+  STEP_PLI_ITEM_STYLE : 
+      top-padding: 0.0  inch
+      bottom-padding: 0.0  inch
+      left-padding: 0.08  inch
+      right-padding: 0.08  inch
+
+  STEP_PLI_IMAGE_STYLE : 
+      vert-align: bottom
+      horz-align: center
+      top-padding: 0.0  inch
+      bottom-padding: 0.0
+      left-padding: 0.0  inch
+      right-padding: 0.0  inch
+
+  STEP_PLI_TEXT_STYLE : 
+      font: ${NUM_FONT}
+      font-colour: ${WHITE}
+      font-size: 9.5
+      vert-align: top
+      horz-align: left
+      top-padding: 0.05  inch
+      bottom-padding: 0.0  inch
+      left-padding: 0.0  inch
+      right-padding: 0.0  inch
+
+
+  PREVIEW_ASSEM_STYLE : 
+      background-fill: True
+      background-colour: ${WHITE}
+      border-outline: True
+      border-width: 0.015  inch
+      border-radius: 0.00  inch
+      left-padding: 0.25  inch
+      right-padding: 0.25  inch
+      top-padding: 0.1  inch
+      bottom-padding: 0.05  inch
+      bottom-margin: 0.25 inch
+      vert-align: centre
+      horz-align: centre
+
+
+  PREVIEW_IMAGE_STYLE : 
+      vert-align: centre
+      horz-align: centre
+      top-padding: 0.0  inch
+      bottom-padding: 0.0 inch
+      left-padding: 0.0  inch
+      right-padding: 0.0  inch
+
+
+  PREVIEW_QTY_STYLE : 
+      font: ${QTY_FONT}
+      font-size: 24
+      font-colour: ${WHITE}
+      horz-align: centre
+      vert-align: centre
+      right-padding: 0.0  inch
+      left-padding: 0.0  inch
+      top-padding: 0.0  inch
+      bottom-padding: 0.0  inch
+
+  ROTATE_ICON_STYLE:
+    background-fill: True
+    background-colour: ${DARK}
+    border-outline: True
+    border-colour: ${WHITE}
+    border-width: 0.015 inch
+    border-radius: 0.08 inch
+
+  ROTATE_ARROW_STYLE:
+    line-colour: ${WHITE}
+    border-colour: ${DARK}
+    border-outline: False
+    line-width: 0.02 inch
+    length: 10
+    width: 8
+    arrow-style: taper

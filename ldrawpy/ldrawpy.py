@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 #
-# Copyright (C) 2018  Fx Bricks Inc.
+# Copyright (C) 2020  Michael Gale
 # This file is part of the legocad python module.
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -23,27 +23,26 @@
 #
 # LDraw python module
 
-LDR_OPT_COLOUR = 24
-LDR_DEF_COLOUR = 16
-LDR_ALL_COLOUR = 1000
-LDR_ANY_COLOUR = 1001
-LDR_OTHER_COLOUR = 1002
-LDR_MONO_COLOUR = 1003
-LDR_BLKWHT_COLOUR = 1004
-LDR_GRAY_COLOUR = 1005
-LDR_REDYLW_COLOUR = 1006
-LDR_BLUYLW_COLOUR = 1007
-LDR_REDBLUYLW_COLOUR = 1008
-LDR_GRNBRN_COLOUR = 1009
-LDR_BLUBRN_COLOUR = 1010
-LDR_BRGREEN_COLOUR = 1011
-LDR_LAVENDER_COLOUR = 1012
-LDR_PINK_COLOUR = 1013
-LDR_LTYLW_COLOUR = 1014
-LDR_BLUBLU_COLOUR = 1015
-LDR_DKREDBLU_COLOUR = 1016
+SPECIAL_TOKENS = {
+    "scale": ["!LPUB ASSEM MODEL_SCALE %-1", "!PY SCALE %-1"],
+    "rotation_abs": ["ROTSTEP %2 %3 %4 ABS"],
+    "rotation_rel": ["ROTSTEP %2 %3 %4 REL"],
+    "page_break": ["!LPUB INSERT PAGE", "!PY PAGE_BREAK"],
+    "columns": ["!PY COLUMNS %-1"],
+    "column_break": ["!PY COLUMN_BREAK"],
+    "arrow_begin": ["!PY ARROW BEGIN %4 %5 %6 %7 %8 %9 %10 %11 %12"],
+    "arrow_colour": ["!PY ARROW COLOUR %-1"],
+    "arrow_length": ["!PY ARROW LENGTH %-1"],
+    "arrow_end": ["!PY ARROW END"],
+    "callout": ["!PY CALLOUT"],
+    "bom": ["!LPUB INSERT BOM", "!PY BOM"],
+}
+
 
 def BrickNameStrip(s, level=0):
+    """ Progressively strips (with increasing levels) a part description
+    by making substitutions with abreviations, removing spaces, etc. 
+    This can be useful for labelling or BOM part lists where space is limited."""
     sn = s
     if level == 0:
         sn = sn.replace("  ", " ")
@@ -54,7 +53,9 @@ def BrickNameStrip(s, level=0):
         sn = sn.replace(
             "Plate 1 x 2 without Groove with 1 Centre Stud", "Plate 1 x 2  Jumper"
         )
-        sn = sn.replace("Plate 1 x 2 with Groove with 1 Centre Stud", "Plate 1 x 2  Jumper")
+        sn = sn.replace(
+            "Plate 1 x 2 with Groove with 1 Centre Stud", "Plate 1 x 2  Jumper"
+        )
         sn = sn.replace("Brick 1 x 1 with Headlight", "Brick 1 x 1 Erling")
         sn = sn.replace("with Groove", "")
         sn = sn.replace("Bluish ", "Bl ")

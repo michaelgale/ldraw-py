@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 #
-# Copyright (C) 2018  Fx Bricks Inc.
+# Copyright (C) 2020  Michael Gale
 # This file is part of the legocad python module.
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -23,45 +23,36 @@
 #
 # LDraw related helper functions
 
-import os
-from fxgeometry import Vector
-
-def LineHasAllTokens(line, tokenlist):
-    for t in tokenlist:
-        tokens = t.split()
-        tcount = 0
-        tlen = len(tokens)
-        for te in tokens:
-            if te in line.split():
-                tcount += 1
-        if tcount == tlen:
-            return True
-    return False
+import os, tempfile
+from toolbox import *
 
 def mm2LDU(x):
-    return(x * 2.5)
+    return x * 2.5
+
 
 def LDU2mm(x):
-    return(x * 0.4)
+    return x * 0.4
 
-def PUnits(point, units='ldu'):
+
+def PUnits(point, units="ldu"):
     """
     Writes a floating point value in units of either mm or ldu.
     It restricts the number of decimal places to 4 and minimizes
     redundant trailing zeros (as recommended by ldraw.org)
     """
     x = 0.0
-    if units=='mm':
+    if units == "mm":
         x = point * 2.5
     else:
         x = point
     s = "%.4f" % (x)
     y = float(s)
-    ns = str(y).rstrip('0')
-    zs = ns.rstrip('.')
-    if zs == '-0':
-        return '0 '
-    return (zs + ' ')
+    ns = str(y).rstrip("0")
+    zs = ns.rstrip(".")
+    if zs == "-0":
+        return "0 "
+    return zs + " "
+
 
 def MatStr(m):
     """
@@ -69,13 +60,20 @@ def MatStr(m):
     """
     s = []
     for v in m:
-        s.append(PUnits(v, 'ldu'))
-    return ''.join(s)
+        s.append(PUnits(v, "ldu"))
+    return "".join(s)
+
 
 def VectorStr(p, attrib):
-    return PUnits(p.x, attrib.units) + PUnits(p.y, attrib.units) + PUnits(p.z, attrib.units)
+    return (
+        PUnits(p.x, attrib.units)
+        + PUnits(p.y, attrib.units)
+        + PUnits(p.z, attrib.units)
+    )
+
 
 def GetCircleSegments(radius, segments, attrib):
+    from .ldrprimitives import LDRLine
     lines = []
     for seg in range(segments):
         p1 = Vector(0, 0, 0)
@@ -92,27 +90,76 @@ def GetCircleSegments(radius, segments, attrib):
         lines.append(l)
     return lines
 
-START_TOKENS = ['PLI BEGIN IGN', 'BUFEXCHG STORE', 'SYNTH BEGIN']
-END_TOKENS = ['PLI END', 'BUFEXCHG RETRIEVE', 'SYNTH END']
 
-def GetPartsFromModel(ldr_string):
-    parts = []
-    lines = ldr_string.splitlines()
-    mask_depth = 0
-    for line in lines:
-        pd = {}
-        if LineHasAllTokens(line, START_TOKENS):
-            mask_depth += 1
-        if LineHasAllTokens(line, END_TOKENS):
-            if mask_depth > 0:
-                mask_depth -= 1
+def ldrlist_from_parts(parts):
+    """ Returns a list of LDRPart objects from either a list of LDRParts,
+    a list of strings representing parts or a string with line feed 
+    delimited parts."""
+    from .ldrprimitives import LDRPart
 
-        lineType = int(line.lstrip()[0] if line.lstrip() else -1)
-        if lineType == -1:
-            continue
-        if lineType == 1 and mask_depth == 0:
-            splitLine = line.lower().split()
-            pd['color'] = splitLine[1]
-            pd['partId'] = ' '.join([str(i) for i in splitLine[14:]])
-            parts.append(pd)
-    return parts
+    p = []
+    if isinstance(parts, list):
+        if len(parts) < 1:
+            return []
+        if isinstance(parts[0], LDRPart):
+            p.extend(parts)
+        else:
+            for e in parts:
+                lp = LDRPart()
+                if lp.from_str(e) is not None:
+                    p.append(lp)
+    else:
+        # build from a string of LDraw text
+        for e in parts.splitlines():
+            lp = LDRPart()
+            if lp.from_str(e) is not None:
+                p.append(lp)
+    return p
+
+
+def ldrstring_from_list(parts):
+    """ Returns a LDraw formatted string from a list of parts.  Each part
+    is represented in a line feed terminated string concatenated together. """
+    from .ldrprimitives import LDRPart
+
+    s = []
+    for p in parts:
+        if isinstance(p, LDRPart):
+            s.append(str(p))
+        else:
+            if p[-1] != "\n":
+                s.append(p + "\n")
+            else:
+                s.append(p)
+    return "".join(s)
+
+
+def merge_same_parts(parts, other, ignore_colour=False, as_str=False):
+    """ Merges parts + other where the the parts in other take precedence."""
+    from .ldrprimitives import LDRPart
+
+    op = ldrlist_from_parts(other)
+    p = ldrlist_from_parts(other)
+    np = ldrlist_from_parts(parts)
+    for n in np:
+        if not any(
+            [
+                n.is_same(o, ignore_location=True, ignore_colour=ignore_colour)
+                for o in op
+            ]
+        ):
+            p.append(n)
+    if as_str:
+        return ldrstring_from_list(p)
+    return p
+
+
+def remove_parts_from_list(parts, other):
+    """ Returns a list based on removing the parts from other from parts. """
+    pp = ldrlist_from_parts(parts)
+    op = ldrlist_from_parts(other)
+    np = []
+    for p in pp:
+        if not any([o.name == p.name for o in op]):
+            np.append(p)
+    return np

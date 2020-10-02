@@ -6,7 +6,6 @@ import pytest
 
 from ldrawpy.ldrcolour import *
 
-
 def test_init_colour():
     c1 = LDRColour(15)
     c2 = LDRColour('White')

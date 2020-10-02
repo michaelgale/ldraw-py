@@ -26,9 +26,9 @@
 import os
 import tempfile
 from functools import reduce
+
 from toolbox import *
-from .constants import *
-from .ldrhelpers import VectorStr, MatStr
+from ldrawpy import *
 
 
 class LDRAttrib:

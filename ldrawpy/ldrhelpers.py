@@ -25,6 +25,7 @@
 
 import os, tempfile
 from toolbox import *
+from ldrawpy import *
 
 def mm2LDU(x):
     return x * 2.5

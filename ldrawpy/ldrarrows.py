@@ -28,9 +28,8 @@ import copy
 from math import sin, cos, pi
 from functools import reduce
 
-from .ldrawpy import *
 from toolbox import *
-from .ldrprimitives import *
+from ldrawpy import *
 
 ARROW_PREFIX = """0 BUFEXCHG A STORE"""
 ARROW_PLI = """0 !LPUB PLI BEGIN IGN"""

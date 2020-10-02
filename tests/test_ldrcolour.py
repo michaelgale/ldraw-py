@@ -4,7 +4,7 @@ import os
 import sys
 import pytest
 
-from ldrawpy.ldrcolour import *
+from ldrawpy import *
 
 def test_init_colour():
     c1 = LDRColour(15)

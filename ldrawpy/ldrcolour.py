@@ -25,8 +25,8 @@
 
 import os
 import string
-from .constants import *
-from .ldrcolourdict import *
+
+from ldrawpy import *
 
 
 class LDRColour(object):

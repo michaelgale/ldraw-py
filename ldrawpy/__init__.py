@@ -11,9 +11,9 @@ script_dir = os.path.dirname(__file__)
 
 from .constants import *
 from .ldrawpy import *
+from .ldrcolourdict import *
+from .ldrhelpers import *
 from .ldrcolour import LDRColour
 from .ldrprimitives import LDRAttrib, LDRHeader, LDRLine, LDRTriangle, LDRQuad, LDRPart
 from .ldrshapes import *
 from .ldrmodel import LDRModel, parse_special_tokens
-from .ldrdocument import LDRDocument
-from .ldrdochelpers import get_centroids_of_colour, CalloutArrows, RotationIcon

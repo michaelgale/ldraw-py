@@ -4,8 +4,8 @@ import os
 import sys
 import pytest
 
-from ldrawpy.ldrprimitives import *
 from toolbox import *
+from ldrawpy import *
 
 def test_ldrline():
     l1 = LDRLine(0)

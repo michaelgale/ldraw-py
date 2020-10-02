@@ -28,12 +28,9 @@ import datetime
 import crayons
 from datetime import datetime
 from collections import defaultdict
+
 from toolbox import *
-from .constants import *
-from .ldrprimitives import LDRPart
-from .ldrhelpers import *
-from .ldrawpy import SPECIAL_TOKENS
-from brickbom import *
+from ldrawpy import *
 
 
 START_TOKENS = ["PLI BEGIN IGN", "BUFEXCHG STORE", "SYNTH BEGIN"]
@@ -192,6 +189,7 @@ def unique_set(items):
 
 
 class LDRModel:
+
     PARAMS = {
         "global_origin": (0, 0, 0),
         "global_aspect": (-40, 55, 0),

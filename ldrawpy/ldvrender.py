@@ -29,9 +29,9 @@ import crayons
 from datetime import datetime
 from collections import defaultdict
 from PIL import Image, ImageOps, ImageChops, ImageFilter, ImageEnhance
+
 from toolbox import *
-from .constants import *
-from .ldrprimitives import LDRPart
+from ldrawpy import *
 
 LDVIEW_BIN = "/Applications/LDView.app/Contents/MacOS/LDView"
 LDVIEW_DICT = {

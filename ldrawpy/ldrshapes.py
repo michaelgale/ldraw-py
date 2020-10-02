@@ -26,10 +26,10 @@
 
 import os
 import copy
+
 from toolbox import *
-from .ldrawpy import *
-from .ldrprimitives import *
-from .ldrhelpers import VectorStr, MatStr, GetCircleSegments
+from ldrawpy import *
+
 # from p2t import CDT
 
 # Deprecated class until a replacement for poly2tri (p2t) can be found

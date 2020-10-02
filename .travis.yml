@@ -4,9 +4,9 @@ python:
   - "3.6"
 
 before_script:
-    - wget https://github.com/michaelgale/fxgeometry/archive/master.zip -O /tmp/fxgeometry.zip
-    - unzip /tmp/fxgeometry.zip
-    - cd fxgeometry-master
+    - wget https://github.com/michaelgale/toolbox-py/archive/master.zip -O /tmp/toolbox.zip
+    - unzip /tmp/toolbox.zip
+    - cd toolbox-py-master
     - python setup.py install
     - cd ..
 

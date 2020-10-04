@@ -29,6 +29,7 @@ from functools import reduce
 
 from toolbox import *
 from ldrawpy import *
+from .ldrhelpers import VectorStr, MatStr
 
 
 class LDRAttrib:

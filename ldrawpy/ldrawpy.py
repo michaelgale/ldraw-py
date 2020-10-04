@@ -23,6 +23,10 @@
 #
 # LDraw python module
 
+from .constants import *
+from .ldrprimitives import LDRTriangle, LDRLine
+from toolbox import *
+
 SPECIAL_TOKENS = {
     "scale": ["!LPUB ASSEM MODEL_SCALE %-1", "!PY SCALE %-1"],
     "rotation_abs": ["ROTSTEP %2 %3 %4 ABS"],
@@ -37,6 +41,53 @@ SPECIAL_TOKENS = {
     "callout": ["!PY CALLOUT"],
     "bom": ["!LPUB INSERT BOM", "!PY BOM"],
 }
+
+
+def xyz_to_ldr(point, as_tuple=False):
+    """Converts a typical x,y,z 3D coordinate to the somewhat unconventional
+    LDraw representations of x, -z, y, i.e. the vertical axis extends in 
+    the -y direction as opposed to +z. """
+    if isinstance(point, (tuple, list)):
+        v = Vector(point[0], -point[2], point[1])
+    else:
+        v = Vector(point.x, -point.z, point.y)
+    if as_tuple:
+        return v.as_tuple()
+    return v
+
+
+def mesh_to_ldr(
+    faces, vertices, mesh_colour=LDR_DEF_COLOUR, edges=None, edge_colour=None
+):
+    """Converts a triangular mesh into a LDraw formatted string of triangles
+    and optionally specified edge lines.
+      faces - list of triangle vertex indices into the vertices list
+      vertices - list of mesh 3D vertices (x, y, z)
+      mesh_colour - LDraw colour code for mesh triangles
+      edges - list of ((x0, y0, z0), (x1, y1, z1)) line tuples
+      edge_colour - LDraw colour code for edge lines
+    """
+    s = []
+    triangles = []
+    for face in faces:
+        tri = LDRTriangle(mesh_colour, "mm")
+        tri.p1 = xyz_to_ldr(vertices[face[0]])
+        tri.p2 = xyz_to_ldr(vertices[face[1]])
+        tri.p3 = xyz_to_ldr(vertices[face[2]])
+        triangles.append(tri)
+    for triangle in triangles:
+        s.append(str(triangle))
+    if edges is not None:
+        lines = []
+        ec = edge_colour if edge_colour is not None else LDR_OPT_COLOUR
+        for edge in edges:
+            line = LDRLine(ec, "mm")
+            line.p1 = xyz_to_ldr(edge[0])
+            line.p2 = xyz_to_ldr(edge[1])
+            lines.append(line)    
+        for line in lines:
+            s.append(str(line))
+    return "".join(s)
 
 
 def BrickNameStrip(s, level=0):

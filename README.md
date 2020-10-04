@@ -8,6 +8,8 @@
 
 A utility package for creating, modifying, and reading LDraw files and data structures.
 
+LDraw is an open standard for LEGO® CAD software.  It is based on a hierarchy of elements describing primitive shapes up to complex LEGO models and scenes. 
+
 ## Installation
 
 The **ldraw-py** package can be installed directly from the source code:
@@ -46,6 +48,25 @@ An example of the package can be seen below
 
 * Python 3.6+
 * toolbox-py
+
+## References
+
+- [LDraw.org](https://www.ldraw.org) - Official maintainer of the LDraw file format specification and the LDraw official part library.
+- [ldraw-vscode](https://github.com/michaelgale/ldraw-vscode) - Visual Studio Code language extension plug-in for LDraw files
+
+### Lego CAD Tools
+
+- [Bricklink stud.io](https://www.bricklink.com/v3/studio/download.page) new and modern design tool designed and maintained by Bricklink
+- [LeoCAD](https://www.leocad.org) cross platform tool
+- [MLCAD](http://mlcad.lm-software.com) for Windows
+- [Bricksmith](http://bricksmith.sourceforge.net) for macOS by Allen Smith (no longer maintained)
+- [LDView](http://ldview.sourceforge.net) real-time 3D viewer for LDraw models
+
+### LPub Instructions Tools
+
+- Original [LPub](http://lpub.binarybricks.nl) publishing tool by Kevin Clague
+- [LPub3D](https://trevorsandy.github.io/lpub3d/) successor to LPub by Trevor Sandy
+- [Manual](https://sites.google.com/site/workingwithlpub/lpub-4) for Legacy LPub 4 tool (last version by Kevin Clague)
 
 ## Authors
 

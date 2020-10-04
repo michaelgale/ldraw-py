@@ -5,6 +5,7 @@
 *.ldr
 # C extensions
 *.so
+.vscode
 
 # OS litter
 .DS_Store

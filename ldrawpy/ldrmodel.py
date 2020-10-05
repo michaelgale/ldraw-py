@@ -31,7 +31,7 @@ from collections import defaultdict
 
 from toolbox import *
 from ldrawpy import *
-
+from brickbom import BOM, BOMPart
 
 START_TOKENS = ["PLI BEGIN IGN", "BUFEXCHG STORE", "SYNTH BEGIN"]
 END_TOKENS = ["PLI END", "BUFEXCHG RETRIEVE", "SYNTH END"]
@@ -189,7 +189,6 @@ def unique_set(items):
 
 
 class LDRModel:
-
     PARAMS = {
         "global_origin": (0, 0, 0),
         "global_aspect": (-40, 55, 0),

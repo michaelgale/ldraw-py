@@ -133,15 +133,20 @@ def get_parts_from_model(ldr_string):
 
 
 def recursive_parse_model(
-    model, submodels, parts, offset=None, matrix=None, reset_parts=False, inv=False
+    model, submodels, parts, offset=None, matrix=None, reset_parts=False, inv=False, only_submodel=None
 ):
     """ Recursively parses an LDraw model dictionary plus any submodels and
-    populates a parts list representing that model """
+    populates a parts list representing that model.  To support selective
+    parsing of only one submodel, only_submodel can be set to the desired
+    submodel. """
     o = offset if offset is not None else Vector(0, 0, 0)
     m = matrix if matrix is not None else Identity()
     if reset_parts:
         parts.clear()
     for e in model:
+        if only_submodel is not None:
+            if not e["partname"] == only_submodel:
+                continue
         if e["partname"] in submodels:
             submodel = submodels[e["partname"]]
             p = LDRPart()
@@ -165,10 +170,11 @@ def recursive_parse_model(
                 inv=not inv,
             )
         else:
-            part = LDRPart()
-            part.from_str(e["ldrtext"])
-            part.transform(matrix=m, offset=o)
-            parts.append(part)
+            if only_submodel is None:
+                part = LDRPart()
+                part.from_str(e["ldrtext"])
+                part.transform(matrix=m, offset=o)
+                parts.append(part)
 
 
 def _coord_str(x, y=None, sep=", "):
@@ -233,6 +239,32 @@ class LDRModel:
 
     def __getitem__(self, key):
         return self.unwrapped[key]
+
+    def print_step_dict(self, key):
+        if key in self.steps:
+            s = self.steps[key]
+            for k, v in s.items():
+                if k == "sub_parts":
+                    for ks, vs in v.items():
+                        print("%s: " % (ks))
+                        for e in vs:
+                            print("  %s" % (str(e).rstrip()))
+                elif isinstance(v, list):
+                    print("%s: " % (k))
+                    for vx in v:
+                        print("  %s" % (str(vx).rstrip()))
+                else:
+                    print("%s: %s" % (k, v))
+
+    def print_unwrapped_dict(self, idx):
+        s = self.unwrapped[idx]
+        for k, v in s.items():
+            if isinstance(v, list):
+                print("%s: " % (k))
+                for vx in v:
+                    print("  %s" % (str(vx).rstrip()))
+            else:
+                print("%s: %s" % (k, v))
 
     def print_unwrapped_verbose(self):
         for i, v in enumerate(self.unwrapped):
@@ -459,6 +491,7 @@ class LDRModel:
                 "meta": v["meta"],
                 "aspect_change": v["aspect_change"],
                 "raw_ldraw": v["raw_ldraw"],
+                "sub_parts": v["sub_parts"],
             }
             unwrapped.append(sd)
             idx += 1
@@ -625,14 +658,16 @@ class LDRModel:
             self.pli, self.steps = self.parse_model(root, is_top_level=True)
         self.unwrap()
 
-    def ad_hoc_parse(self, ldrstring):
+    def ad_hoc_parse(self, ldrstring, only_submodel=None):
         """ Performs an adhoc parsing operation on a provided LDraw formatted text
         string. If any references are made to submodels, then it recursively un packs
-        the parts for the submodels based on a previous call to parse_model."""
+        the parts for the submodels based on a previous call to parse_model.
+        Optionally, the parsing can be confined to only one submodel identified
+        by only_submodel. """
         model_parts = []
         step_parts = get_parts_from_model(ldrstring)
         recursive_parse_model(
-            step_parts, self.sub_models, model_parts, reset_parts=False
+            step_parts, self.sub_models, model_parts, reset_parts=False, only_submodel=only_submodel
         )
         return model_parts
 
@@ -660,6 +695,8 @@ class LDRModel:
                    found in this step
             raw_ldraw - the raw LDraw text in the step
             aspect_change - a flag indicating the aspect angle has changed
+            sub_parts - parts added to this step that come from sub-models
+                        indexed by submodel name in a dictionary
          """
         is_masked = False
         if not is_top_level:
@@ -717,6 +754,12 @@ class LDRModel:
                 aspect=self.pli_aspect,
                 use_exceptions=True,
             )
+            sub_dict = {}
+            for sub in subs:
+                sub_parts = []
+                recursive_parse_model(step_parts, self.sub_models, sub_parts, reset_parts=True, only_submodel=sub)
+                pn = self.transform_parts(sub_parts, aspect=current_aspect)
+                sub_dict[sub] = pn
             if len(pli) > 0:
                 model_pli[step_num] = pli
                 pli_bom = BOM()
@@ -739,6 +782,7 @@ class LDRModel:
                 step_dict["pli_bom"] = pli_bom
                 step_dict["meta"] = meta_cmd
                 step_dict["aspect_change"] = aspect_change
+                step_dict["sub_parts"] = sub_dict
                 model_steps[step_num] = step_dict
                 step_num += 1
         return model_pli, model_steps

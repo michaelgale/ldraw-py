@@ -309,6 +309,8 @@ class LDRModel:
         step in the root model. """
         if step == 1 and as_start_idx:
             return 0
+        if step < 0:
+            return len(self.unwrapped) + step
         if step < 1:
             return 0
         x, y = None, None
@@ -332,8 +334,23 @@ class LDRModel:
                 % (v["level"], k, v["end"], v["parent"])
             )
 
+    def is_callout_start(self, idx):
+        """ Returns True if the index to the unwrapped model points to a
+        the beginning of a callout sequence. """
+        return idx in self.callouts
+
+    def prev_step_was_callout(self, idx):
+        """Returns True if the previous step was in a callout."""
+        callout_before = self[idx - 1]["callout"] > 0 if idx > 0 else False
+        return callout_before
+
+    def prev_step_was_callout_end(self, idx):
+        """Returns True if the previous step ended a callout."""
+        did_end = self.is_callout_end(idx - 1) if idx > 0 else False
+        return did_end
+
     def is_callout_end(self, idx):
-        """ Returns true if the index to the unwrapped model points to a
+        """ Returns True if the index to the unwrapped model points to a
         step at the end of a callout sequence. """
         for k, v in self.callouts.items():
             if v["end"] == idx:

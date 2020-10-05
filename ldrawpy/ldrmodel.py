@@ -31,7 +31,13 @@ from collections import defaultdict
 
 from toolbox import *
 from ldrawpy import *
-from brickbom import BOM, BOMPart
+
+# import brickbom if available, otherwise don't raise since it is not
+# necessary for testing.
+try:
+    from brickbom import BOM, BOMPart
+except:
+    pass
 
 START_TOKENS = ["PLI BEGIN IGN", "BUFEXCHG STORE", "SYNTH BEGIN"]
 END_TOKENS = ["PLI END", "BUFEXCHG RETRIEVE", "SYNTH END"]

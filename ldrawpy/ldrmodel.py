@@ -398,6 +398,13 @@ class LDRModel:
                 level = max(level, v["parent"])
         return level
 
+    def has_assembly_arrows(self, idx):
+        meta = self.unwrapped[idx]["meta"]
+        for m in meta:
+            if "arrow_begin" in m:
+                return True
+        return False
+
     def print_parts_at_idx(self, idx):
         parts = self.unwrapped[idx]["step_parts"]
         for p in parts:
@@ -740,10 +747,13 @@ class LDRModel:
                         current_aspect[1] + ar[1],
                         current_aspect[2] + ar[2],
                     )
+            # capture submodel references in this step
             subs = []
             for p in step_parts:
                 if p["partname"] in self.sub_models:
                     subs.append(p["partname"])
+            # capture the parts that have been added in this step
+            # and store a transformed/normalized version for a PLI
             parts_in_step = []
             recursive_parse_model(
                 step_parts, self.sub_models, parts_in_step, reset_parts=True
@@ -754,24 +764,31 @@ class LDRModel:
                 aspect=self.pli_aspect,
                 use_exceptions=True,
             )
+            # submodel parts stored in separate dictionaries for convenient 
+            # access if required
             sub_dict = {}
             for sub in subs:
                 sub_parts = []
                 recursive_parse_model(step_parts, self.sub_models, sub_parts, reset_parts=True, only_submodel=sub)
                 pn = self.transform_parts(sub_parts, aspect=current_aspect)
                 sub_dict[sub] = pn
+            
             if len(pli) > 0:
                 model_pli[step_num] = pli
+                # Store a BOM object representation of the parts for convenience
                 pli_bom = BOM()
                 for p in pli:
                     pli_bom.add_part(BOMPart(1, p.name, p.attrib.colour))
                     if is_top_level:
                         self.bom.add_part(BOMPart(1, p.name, p.attrib.colour))
+                # store the model representation
                 recursive_parse_model(
                     step_parts, self.sub_models, model_parts, reset_parts=False
                 )
                 p = self.transform_parts(model_parts, aspect=current_aspect)
+                # store only the parts added in this step
                 pn = self.transform_parts(parts_in_step, aspect=current_aspect)
+                # put all the collection info into a dictionary
                 step_dict = {}
                 step_dict["parts"] = p
                 step_dict["sub_models"] = subs

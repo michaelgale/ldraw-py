@@ -2,10 +2,12 @@
 
 import os
 
+# fmt: off
 __project__ = 'ldrawpy'
 __version__ = '0.5.0'
+# fmt: on
 
-VERSION = __project__ + '-' + __version__
+VERSION = __project__ + "-" + __version__
 
 script_dir = os.path.dirname(__file__)
 

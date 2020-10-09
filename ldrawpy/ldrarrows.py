@@ -291,4 +291,3 @@ def arrows_for_lpub_file(filename, outfile):
                     fpo.write(new_step)
                 if len(steps) > 1:
                     fpo.write("\n")
-

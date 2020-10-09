@@ -61,11 +61,13 @@ LDVIEW_DICT = {
 # 10.0 / tan(0.005 deg)
 LDU_DISTANCE = 114591
 
+
 def camera_distance(scale=1.0, dpi=300, page_width=8.5):
     one = 20 * 1 / 64 * dpi * scale
     sz = page_width * dpi / one * LDU_DISTANCE * 0.775
     sz *= 1700 / 1000
     return sz
+
 
 def _coord_str(x, y=None, sep=", "):
     if isinstance(x, (tuple, list)):
@@ -80,8 +82,10 @@ def _coord_str(x, y=None, sep=", "):
     s.append(str(crayons.yellow("%s" % (sb))))
     return "".join(s)
 
+
 class LDViewRender:
     """ LDView render session helper class. """
+
     PARAMS = {
         "dpi": 300,
         "page_width": 8.5,
@@ -166,7 +170,7 @@ class LDViewRender:
         for p in parts:
             ldrstr.append(str(p))
         ldrstr = "".join(ldrstr)
-        self.render_from_str(ldrstr, outfile)        
+        self.render_from_str(ldrstr, outfile)
 
     def render_from_file(self, ldrfile, outfile):
         """ Render from an LDraw file. """
@@ -253,8 +257,6 @@ class LDViewRender:
             _, fn = split_path(filename)
             fn = colour_path_str(fn)
             self._logoutput("> smoothed %s (%s)" % (fn, _coord_str(im.size)), tstart)
-
-
 
 
 def GeneratePartImage(name, colour=LDR_DEF_COLOUR, size=512, outpath="./", filename=""):

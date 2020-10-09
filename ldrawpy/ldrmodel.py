@@ -80,8 +80,8 @@ def parse_special_tokens(line):
 
 
 def get_meta_commands(ldr_string):
-    """ Parses an LDraw string looking for known meta commands. Identified meta
-    commands are returned in a dictionary. """
+    """Parses an LDraw string looking for known meta commands. Identified meta
+    commands are returned in a dictionary."""
     cmd = []
     lines = ldr_string.splitlines()
     for line in lines:
@@ -96,9 +96,9 @@ def get_meta_commands(ldr_string):
 
 
 def get_parts_from_model(ldr_string):
-    """ Extracts a list of parts representing LDraw parts (line type 1) from a
+    """Extracts a list of parts representing LDraw parts (line type 1) from a
     string of LDraw text. The returned list is contains dictionary for each part
-    with the keys "partname" and "ldrtext". """
+    with the keys "partname" and "ldrtext"."""
     parts = []
     lines = ldr_string.splitlines()
     mask_depth = 0
@@ -133,12 +133,19 @@ def get_parts_from_model(ldr_string):
 
 
 def recursive_parse_model(
-    model, submodels, parts, offset=None, matrix=None, reset_parts=False, inv=False, only_submodel=None
+    model,
+    submodels,
+    parts,
+    offset=None,
+    matrix=None,
+    reset_parts=False,
+    inv=False,
+    only_submodel=None,
 ):
-    """ Recursively parses an LDraw model dictionary plus any submodels and
+    """Recursively parses an LDraw model dictionary plus any submodels and
     populates a parts list representing that model.  To support selective
     parsing of only one submodel, only_submodel can be set to the desired
-    submodel. """
+    submodel."""
     o = offset if offset is not None else Vector(0, 0, 0)
     m = matrix if matrix is not None else Identity()
     if reset_parts:
@@ -212,6 +219,7 @@ class LDRModel:
             "3045": (-25, 50, 0),
         },
         "callout_step_thr": 6,
+        "continuous_step_numbers": False,
     }
 
     def __init__(self, filename, **kwargs):
@@ -225,6 +233,7 @@ class LDRModel:
         self.sub_model_str = {}
         self.unwrapped = None
         self.callouts = {}
+        self.continuous_step_count = 0
 
     def __str__(self):
         s = []
@@ -326,8 +335,8 @@ class LDRModel:
         )
 
     def idx_range_from_steps(self, steps):
-        """ Returns a start and stop index into the unwrapped model from
-        either a list or range. """
+        """Returns a start and stop index into the unwrapped model from
+        either a list or range."""
         if isinstance(steps, list):
             start_idx = self.idx_from_step(steps[0], as_start_idx=True)
             stop_idx = self.idx_from_step(steps[len(steps) - 1])
@@ -337,26 +346,33 @@ class LDRModel:
         return start_idx, stop_idx
 
     def idx_from_step(self, step, as_start_idx=False):
-        """ Returns the index from the unwrapped model corresponding to a specified
-        step in the root model. """
-        if step == 1 and as_start_idx:
+        """Returns the index from the unwrapped model corresponding to a specified
+        step in the root model."""
+        if step == 1:  # and as_start_idx:
             return 0
         if step < 0:
             return len(self.unwrapped) + step
         if step < 1:
             return 0
-        x, y = None, None
-        for s in self.unwrapped:
-            if s["level"] == 0 and s["step"] == step:
-                x = s["idx"]
-            if s["level"] == 0 and s["step"] == step + 1:
-                y = s["idx"]
-        if x is not None and y is not None:
-            if as_start_idx:
-                if y > 0:
-                    return y - 1
-                return y
-            return y
+        if as_start_idx:
+            if self.continuous_step_numbers:
+                for s in self.unwrapped:
+                    if s["step"] == step - 1 and s["callout"] == 0:
+                        return s["idx"] + 1
+            else:
+                for s in self.unwrapped:
+                    if s["step"] == step - 1 and s["level"] == 0:
+                        return s["idx"] + 1
+        else:
+            if self.continuous_step_numbers:
+                for s in self.unwrapped:
+                    if s["step"] == step and s["callout"] == 0:
+                        return s["idx"]
+            else:
+                for s in self.unwrapped:
+                    if s["step"] == step and s["level"] == 0:
+                        return s["idx"]
+
         return len(self.unwrapped) - 1
 
     def print_callouts(self):
@@ -367,8 +383,8 @@ class LDRModel:
             )
 
     def is_callout_start(self, idx):
-        """ Returns True if the index to the unwrapped model points to a
-        the beginning of a callout sequence. """
+        """Returns True if the index to the unwrapped model points to a
+        the beginning of a callout sequence."""
         return idx in self.callouts
 
     def prev_step_was_callout(self, idx):
@@ -382,16 +398,16 @@ class LDRModel:
         return did_end
 
     def is_callout_end(self, idx):
-        """ Returns True if the index to the unwrapped model points to a
-        step at the end of a callout sequence. """
+        """Returns True if the index to the unwrapped model points to a
+        step at the end of a callout sequence."""
         for k, v in self.callouts.items():
             if v["end"] == idx:
                 return True
         return False
 
     def callout_parent(self, idx):
-        """ Returns the level into the model hierarchy of a callout's 
-        parent level at the specified index into the unwrapped model. """
+        """Returns the level into the model hierarchy of a callout's
+        parent level at the specified index into the unwrapped model."""
         level = 0
         for k, v in self.callouts.items():
             if idx >= k and idx <= v["end"]:
@@ -423,7 +439,7 @@ class LDRModel:
         print(self.unwrapped[idx]["pli_bom"])
 
     def get_sub_model_assem(self, submodel):
-        """ Returns the index into the unwrapped model of a specified 
+        """Returns the index into the unwrapped model of a specified
         sub-model assembly."""
         last_idx = 0
         submodel = submodel if ".ldr" in submodel else submodel + ".ldr"
@@ -444,15 +460,15 @@ class LDRModel:
         model_qty=None,
         unwrapped=None,
     ):
-        """ This recursive function unwraps the entire sequence of building steps
+        """This recursive function unwraps the entire sequence of building steps
         for a LDraw model.  This sequence unwraps nested building steps implied in
-        the hierarchy of a model consisting of sub-models and the sub-model's 
+        the hierarchy of a model consisting of sub-models and the sub-model's
         children.  Unwrapping the model also allows pre-computation of transitions
         to nested sub-steps which can either be represented as callouts or inline
-        build instructions.  The unwrapped model is represented as a list of 
-        dictionaries with a rich representation of the model at each step.  
+        build instructions.  The unwrapped model is represented as a list of
+        dictionaries with a rich representation of the model at each step.
         The unwrapped model can then be traversed easily in a linear fashion
-        by an iterator. """
+        by an iterator."""
 
         if root is None:
             idx = 0
@@ -461,6 +477,7 @@ class LDRModel:
             model = self.steps
             model_name = "root"
             model_qty = 0
+            self.continuous_step_count = 0
         else:
             idx = idx
             level = level
@@ -506,8 +523,9 @@ class LDRModel:
             # when finished unwrapping the model, loop through the model
             # to add new keys for next and prev level changes and automatic
             # callout detection and page breaks across changes in level which
-            # do not result in a callout
+            # do not result in a callout.  Also apply step numbering scheme.
             umodel = []
+            step_num = 1
             prev_level = 0
             next_level = 0
             prev_break = False
@@ -551,6 +569,11 @@ class LDRModel:
                     callout_level = callout[len(callout) - 1]
                 else:
                     callout_level = 0
+                if self.continuous_step_numbers:
+                    if callout_level == 0:
+                        e["step"] = step_num
+                        step_num += 1
+                        self.continuous_step_count += 1
                 x = {
                     **e,
                     "prev_level": prev_level,
@@ -562,6 +585,10 @@ class LDRModel:
                 umodel.append(x)
                 prev_level = level
                 prev_break = page_break
+            if self.continuous_step_numbers:
+                for e in umodel:
+                    if e["callout"] == 0:
+                        e["num_steps"] = self.continuous_step_count
             # pair up the callout boundaries in dictionary with the start
             # index as the key and the end index and parent level as values
             self.callouts = {}
@@ -577,8 +604,8 @@ class LDRModel:
         return unwrapped, idx
 
     def transform_parts_to(self, parts, origin=None, aspect=None, use_exceptions=False):
-        """ Transforms the location and/or aspect angle of all the parts in
-        a list to a fixed position and/or aspect angle. """
+        """Transforms the location and/or aspect angle of all the parts in
+        a list to a fixed position and/or aspect angle."""
         origin = origin if origin is not None else self.global_origin
         aspect = aspect if aspect is not None else self.global_aspect
         if not isinstance(origin, Vector):
@@ -598,9 +625,9 @@ class LDRModel:
         return tparts
 
     def transform_parts(self, parts, offset=None, aspect=None):
-        """ Transforms the geometry (location and or aspect angle) of all
+        """Transforms the geometry (location and or aspect angle) of all
         the parts in a list.  The transform is applied as an offset to
-        the existing part geometry. """
+        the existing part geometry."""
         offset = offset if offset is not None else self.global_origin
         aspect = aspect if aspect is not None else self.global_aspect
         if not isinstance(offset, Vector):
@@ -647,7 +674,7 @@ class LDRModel:
         return tparts
 
     def parse_file(self):
-        """ Parses an LDraw file and determines the root model and any included
+        """Parses an LDraw file and determines the root model and any included
         submodels."""
         self.sub_models = {}
         with open(self.filename, "rt") as fp:
@@ -666,25 +693,29 @@ class LDRModel:
         self.unwrap()
 
     def ad_hoc_parse(self, ldrstring, only_submodel=None):
-        """ Performs an adhoc parsing operation on a provided LDraw formatted text
+        """Performs an adhoc parsing operation on a provided LDraw formatted text
         string. If any references are made to submodels, then it recursively un packs
         the parts for the submodels based on a previous call to parse_model.
         Optionally, the parsing can be confined to only one submodel identified
-        by only_submodel. """
+        by only_submodel."""
         model_parts = []
         step_parts = get_parts_from_model(ldrstring)
         recursive_parse_model(
-            step_parts, self.sub_models, model_parts, reset_parts=False, only_submodel=only_submodel
+            step_parts,
+            self.sub_models,
+            model_parts,
+            reset_parts=False,
+            only_submodel=only_submodel,
         )
         return model_parts
 
     def parse_model(self, root, is_top_level=True, mask_submodels=False):
-        """ Generic parser for LDraw text. It parses a model provided either as a string
+        """Generic parser for LDraw text. It parses a model provided either as a string
         of the entire LDR file at root level or as a key to a submodel in the LDR file.
         In either case, it recursively traverses the LDraw tree including all the
         children of the desired model and returns two lists: one for the parts
         at each step and one representing the model at each step.
-        
+
         To parse at the root:
            self.pli, self.steps = self.parse_model(root, is_top_level=True)
         To parse a submodel:
@@ -704,7 +735,7 @@ class LDRModel:
             aspect_change - a flag indicating the aspect angle has changed
             sub_parts - parts added to this step that come from sub-models
                         indexed by submodel name in a dictionary
-         """
+        """
         is_masked = False
         if not is_top_level:
             if root in self.sub_model_str:
@@ -764,15 +795,21 @@ class LDRModel:
                 aspect=self.pli_aspect,
                 use_exceptions=True,
             )
-            # submodel parts stored in separate dictionaries for convenient 
+            # submodel parts stored in separate dictionaries for convenient
             # access if required
             sub_dict = {}
             for sub in subs:
                 sub_parts = []
-                recursive_parse_model(step_parts, self.sub_models, sub_parts, reset_parts=True, only_submodel=sub)
+                recursive_parse_model(
+                    step_parts,
+                    self.sub_models,
+                    sub_parts,
+                    reset_parts=True,
+                    only_submodel=sub,
+                )
                 pn = self.transform_parts(sub_parts, aspect=current_aspect)
                 sub_dict[sub] = pn
-            
+
             if len(pli) > 0:
                 model_pli[step_num] = pli
                 # Store a BOM object representation of the parts for convenience

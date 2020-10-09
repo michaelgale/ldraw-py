@@ -27,6 +27,7 @@ import os, tempfile
 from toolbox import *
 from ldrawpy import *
 
+
 def mm2LDU(x):
     return x * 2.5
 
@@ -75,6 +76,7 @@ def VectorStr(p, attrib):
 
 def GetCircleSegments(radius, segments, attrib):
     from .ldrprimitives import LDRLine
+
     lines = []
     for seg in range(segments):
         p1 = Vector(0, 0, 0)
@@ -93,8 +95,8 @@ def GetCircleSegments(radius, segments, attrib):
 
 
 def ldrlist_from_parts(parts):
-    """ Returns a list of LDRPart objects from either a list of LDRParts,
-    a list of strings representing parts or a string with line feed 
+    """Returns a list of LDRPart objects from either a list of LDRParts,
+    a list of strings representing parts or a string with line feed
     delimited parts."""
     from .ldrprimitives import LDRPart
 
@@ -119,8 +121,8 @@ def ldrlist_from_parts(parts):
 
 
 def ldrstring_from_list(parts):
-    """ Returns a LDraw formatted string from a list of parts.  Each part
-    is represented in a line feed terminated string concatenated together. """
+    """Returns a LDraw formatted string from a list of parts.  Each part
+    is represented in a line feed terminated string concatenated together."""
     from .ldrprimitives import LDRPart
 
     s = []

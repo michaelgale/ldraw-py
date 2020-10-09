@@ -45,8 +45,8 @@ SPECIAL_TOKENS = {
 
 def xyz_to_ldr(point, as_tuple=False):
     """Converts a typical x,y,z 3D coordinate to the somewhat unconventional
-    LDraw representations of x, -z, y, i.e. the vertical axis extends in 
-    the -y direction as opposed to +z. """
+    LDraw representations of x, -z, y, i.e. the vertical axis extends in
+    the -y direction as opposed to +z."""
     if isinstance(point, (tuple, list)):
         v = Vector(point[0], -point[2], point[1])
     else:
@@ -84,15 +84,15 @@ def mesh_to_ldr(
             line = LDRLine(ec, "mm")
             line.p1 = xyz_to_ldr(edge[0])
             line.p2 = xyz_to_ldr(edge[1])
-            lines.append(line)    
+            lines.append(line)
         for line in lines:
             s.append(str(line))
     return "".join(s)
 
 
 def BrickNameStrip(s, level=0):
-    """ Progressively strips (with increasing levels) a part description
-    by making substitutions with abreviations, removing spaces, etc. 
+    """Progressively strips (with increasing levels) a part description
+    by making substitutions with abreviations, removing spaces, etc.
     This can be useful for labelling or BOM part lists where space is limited."""
     sn = s
     if level == 0:

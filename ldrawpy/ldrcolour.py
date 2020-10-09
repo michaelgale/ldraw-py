@@ -30,11 +30,11 @@ from ldrawpy import *
 
 
 class LDRColour(object):
-    """ LDraw colour helper class.  This class can be used to store a
+    """LDraw colour helper class.  This class can be used to store a
     colour and to perform conversions among:
       LDraw colour code, Bricklink colour code, colour name,
-      RGB floating point, RGB hex """
-      
+      RGB floating point, RGB hex"""
+
     def __init__(self, colour=LDR_DEF_COLOUR):
         self.code = LDR_DEF_COLOUR
         self.r = 0.8
@@ -316,4 +316,3 @@ def FillTitlesFromLDRCode(ldrCode):
         fillTitles = [LDR_COLOUR_NAME[226], LDR_COLOUR_NAME[78]]
 
     return fillTitles
-

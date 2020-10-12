@@ -94,9 +94,11 @@ class LDViewRender:
         "image_smooth": False,
         "no_lines": False,
         "wireframe": False,
+        "line_thickness": 3,
         "scale": 1.0,
         "output_path": None,
         "log_output": True,
+        "log_level": 0,
         "overwrite": False,
     }
 
@@ -138,18 +140,8 @@ class LDViewRender:
         self.cam_dist = int(camera_distance(self.scale, self.dpi, self.page_width))
         self.args_cam = "-ca0.01 -cg0.0,0.0,%d" % (self.cam_dist)
 
-    def _logoutput(self, msg, tstart=None):
-        if tstart is not None:
-            tnow = datetime.now()
-            tdiff = tnow - tstart
-            tstr = str(tdiff)
-        s = []
-        s.append("LDR: ")
-        s.append(msg)
-        if tstart is not None:
-            s.append(str(crayons.blue(" [%s]" % (tstr[2:-3]))))
-        s = "".join(s)
-        print(s)
+    def _logoutput(self, msg, tstart=None, level=2):
+        logmsg(msg, level=level, prefix="LDR", log_level=self.log_level)
 
     def render_from_str(self, ldrstr, outfile):
         """ Render from a LDraw text string. """
@@ -197,6 +189,8 @@ class LDViewRender:
         ldv.append(self.args_size)
         ldv.append(self.args_cam)
         for key, value in LDVIEW_DICT.items():
+            if key == "EdgeThickness":
+                value = self.line_thickness
             if self.no_lines:
                 if key == "EdgeThickness":
                     value = 0
@@ -218,7 +212,7 @@ class LDViewRender:
             _, fno = split_path(filename)
             fni = colour_path_str(fni)
             fno = colour_path_str(fno)
-            self._logoutput("rendered file %s to %s..." % (fni, fno), tstart)
+            self._logoutput("rendered file %s to %s..." % (fni, fno), tstart, level=0)
 
         if self.auto_crop:
             self.crop(filename)

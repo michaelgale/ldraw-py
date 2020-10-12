@@ -33,6 +33,8 @@ from .ldrhelpers import VectorStr, MatStr
 
 
 class LDRAttrib:
+    __slots__ = ["colour", "units", "loc", "matrix"]
+
     def __init__(self, colour=LDR_DEF_COLOUR, units="ldu"):
         self.colour = colour
         self.units = units
@@ -58,6 +60,8 @@ class LDRAttrib:
 
 
 class LDRLine:
+    __slots__ = ["attrib", "p1", "p2"]
+
     def __init__(self, colour=LDR_DEF_COLOUR, units="ldu"):
         self.attrib = LDRAttrib(colour, units)
         self.p1 = Vector(0, 0, 0)
@@ -81,6 +85,8 @@ class LDRLine:
 
 
 class LDRTriangle:
+    __slots__ = ["attrib", "p1", "p2", "p3"]
+
     def __init__(self, colour=LDR_DEF_COLOUR, units="ldu"):
         self.attrib = LDRAttrib(colour, units)
         self.p1 = Vector(0, 0, 0)
@@ -108,6 +114,8 @@ class LDRTriangle:
 
 
 class LDRQuad:
+    __slots__ = ["attrib", "p1", "p2", "p3", "p4"]
+
     def __init__(self, colour=LDR_DEF_COLOUR, units="ldu"):
         self.attrib = LDRAttrib(colour, units)
         self.p1 = Vector(0, 0, 0)
@@ -139,6 +147,8 @@ class LDRQuad:
 
 
 class LDRPart:
+    __slots__ = ["attrib", "name", "wrapcallout"]
+
     def __init__(self, colour=LDR_DEF_COLOUR, name=None, units="ldu"):
         self.attrib = LDRAttrib(colour, units)
         self.name = name if name is not None else ""

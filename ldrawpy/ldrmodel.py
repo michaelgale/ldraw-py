@@ -756,6 +756,7 @@ class LDRModel:
         callout_style = "top"
 
         step_num = 1
+        progress_bar(0, len(steps), "Parsing:", length=50)
         for i, step in enumerate(steps):
             aspect_change = False
             step_parts = get_parts_from_model(step)
@@ -839,4 +840,7 @@ class LDRModel:
                 step_dict["sub_parts"] = sub_dict
                 model_steps[step_num] = step_dict
                 step_num += 1
+
+            progress_bar(i, len(steps), "Parsing:", length=50)
+
         return model_pli, model_steps

@@ -140,6 +140,7 @@ def BrickNameStrip(s, level=0):
     elif level == 2:
         sn = sn.replace("Trans", "Tr")
         sn = sn.replace(" x ", "x")
+        sn = sn.replace("Bl ", " ")
     elif level == 3:
         sn = sn.replace("Orange", "Org")
         sn = sn.replace("Yellow", "Ylw")

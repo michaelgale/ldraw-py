@@ -59,7 +59,7 @@ def line_has_all_tokens(line, tokenlist):
 
 def parse_special_tokens(line):
     ls = line.split()
-    meta = None
+    metas = []
     for k, v in SPECIAL_TOKENS.items():
         for t in v:
             tokens = t.split()
@@ -76,7 +76,8 @@ def parse_special_tokens(line):
                     meta = {k: {"values": values, "text": line}}
                 else:
                     meta = {k: {"text": line}}
-    return meta
+                metas.append(meta)
+    return metas
 
 
 def get_meta_commands(ldr_string):
@@ -91,7 +92,7 @@ def get_meta_commands(ldr_string):
         if lineType == 0:
             meta = parse_special_tokens(line)
             if meta is not None:
-                cmd.append(meta)
+                cmd.extend(meta)
     return cmd
 
 
@@ -223,6 +224,7 @@ class LDRModel:
     }
 
     def __init__(self, filename, **kwargs):
+        from brickbom import BOM, BOMPart
         self.filename = filename
         apply_params(self, kwargs, locals())
         _, self.title = split_path(filename)

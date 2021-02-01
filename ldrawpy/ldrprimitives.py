@@ -208,6 +208,15 @@ class LDRPart:
         if not self.attrib.matrix.is_almost_same_as(other.attrib.matrix):
             return False
         return True
+    
+    def is_coaligned(self, other):
+        v1 = self.attrib.loc * self.attrib.matrix
+        v2 = other.attrib.loc * other.attrib.matrix
+        naxis = v1.is_colinear_with(v2)
+        # print(naxis, " : ", v1, v2)
+        if naxis == 2:
+            return True
+        return False
 
     def change_colour(self, to_colour):
         self.attrib.colour = to_colour

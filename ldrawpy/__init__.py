@@ -20,4 +20,4 @@ from .ldrprimitives import LDRAttrib, LDRHeader, LDRLine, LDRTriangle, LDRQuad, 
 from .ldrshapes import *
 from .ldrmodel import LDRModel, parse_special_tokens
 from .ldvrender import LDViewRender
-from .ldrarrows import ArrowContext, arrows_for_step
+from .ldrarrows import ArrowContext, arrows_for_step, remove_offset_parts

@@ -336,3 +336,5 @@
 0 !COLOUR TrueBlack                                             CODE 500   VALUE #05131D   EDGE #05131D
 0 !COLOUR TrueWhite                                             CODE 501   VALUE #FFFFFF   EDGE #FFFFFF
 0 !COLOUR TrueClear                                             CODE 502   VALUE #80FF80   EDGE #20FF20   ALPHA 1
+
+0 !COLOUR ArrowRed                                              CODE 804   VALUE #C91A09   EDGE #05131D   LUMINANCE 15

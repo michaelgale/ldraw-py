@@ -45,7 +45,7 @@ LDVIEW_DICT = {
     "ConditionalHighlights": 1,
     "SaveZoomToFit": 0,
     "SubduedLighting": 1,
-    "UseSpecular": 0,
+    "UseSpecular": 1,
     "UseFlatShading": 0,
     "LightVector": "0,1,1",
     "AllowPrimitiveSubstitution": 0,
@@ -223,9 +223,9 @@ class LDViewRender:
         """ Crop image file. """
         tstart = datetime.now()
         im = Image.open(filename)
-        bg = Image.new(im.mode, im.size, im.getpixel((0, 0)))
+        bg = Image.new(im.mode, im.size, im.getpixel((1, 1)))
         diff = ImageChops.difference(im, bg)
-        diff = ImageChops.add(diff, diff, 2.0, -100)
+        diff = ImageChops.add(diff, diff, 2.0, 0)
         bbox = diff.getbbox()
         if bbox:
             im2 = im.crop(bbox)

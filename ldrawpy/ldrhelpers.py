@@ -23,6 +23,7 @@
 #
 # LDraw related helper functions
 
+import decimal
 import os, tempfile
 from toolbox import *
 from ldrawpy import *
@@ -47,13 +48,21 @@ def PUnits(point, units="ldu"):
         x = point * 2.5
     else:
         x = point
-    s = "%.4f" % (x)
-    y = float(s)
-    ns = str(y).rstrip("0")
-    zs = ns.rstrip(".")
-    if zs == "-0":
+    xs = "%.5f" % (x)
+    ns = str(decimal.Decimal(xs.strip()).quantize(decimal.Decimal(10) ** -4))
+    estr = "0E-4"
+    ns = ns.replace(estr, "0.")
+    if "E" not in ns:
+        ns = ns.rstrip("0")
+    ns = ns.rstrip(".")
+    if ns == "-0":
         return "0 "
-    return zs + " "
+    return ns + " "
+
+    # # zs = ns.rstrip(".")
+    # if zs == "-0":
+    #     return "0 "
+    # return zs + " "
 
 
 def MatStr(m):
@@ -147,7 +156,7 @@ def merge_same_parts(parts, other, ignore_colour=False, as_str=False):
     for n in np:
         if not any(
             [
-                n.is_same(o, ignore_location=True, ignore_colour=ignore_colour)
+                n.is_same(o, ignore_location=False, ignore_colour=ignore_colour)
                 for o in op
             ]
         ):
@@ -157,7 +166,7 @@ def merge_same_parts(parts, other, ignore_colour=False, as_str=False):
     return p
 
 
-def remove_parts_from_list(parts, other):
+def remove_parts_from_list(parts, other, as_str=False):
     """ Returns a list based on removing the parts from other from parts. """
     pp = ldrlist_from_parts(parts)
     op = ldrlist_from_parts(other)
@@ -165,4 +174,6 @@ def remove_parts_from_list(parts, other):
     for p in pp:
         if not any([o.name == p.name for o in op]):
             np.append(p)
+    if as_str:
+        return ldrstring_from_list(np)
     return np

@@ -61,6 +61,5 @@ setuptools.setup(
     ],
     install_requires=[
         "pillow",
-        "toolbox",
     ],
 )

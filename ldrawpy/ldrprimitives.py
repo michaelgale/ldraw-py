@@ -25,6 +25,8 @@
 
 import os
 import tempfile
+import hashlib
+
 from functools import reduce
 
 from toolbox import *
@@ -188,6 +190,11 @@ class LDRPart:
         p.wrapcallout = self.wrapcallout
         p.attrib = self.attrib.copy()
         return p
+
+    def sha1hash(self):
+        shash = hashlib.sha1()
+        shash.update(bytes(str(self), encoding="utf8"))
+        return shash.hexdigest()
 
     def is_identical(self, other):
         if self.name != other.name:

@@ -18,6 +18,6 @@ from .ldrhelpers import *
 from .ldrcolour import LDRColour
 from .ldrprimitives import LDRAttrib, LDRHeader, LDRLine, LDRTriangle, LDRQuad, LDRPart
 from .ldrshapes import *
-from .ldrmodel import LDRModel, parse_special_tokens
+from .ldrmodel import LDRModel, parse_special_tokens, sort_parts, get_sha1_hash
 from .ldvrender import LDViewRender
 from .ldrarrows import ArrowContext, arrows_for_step, remove_offset_parts

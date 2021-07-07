@@ -25,6 +25,8 @@
 
 import os, tempfile
 import datetime
+import hashlib
+
 import crayons
 from datetime import datetime
 from collections import defaultdict
@@ -43,6 +45,34 @@ START_TOKENS = ["PLI BEGIN IGN", "BUFEXCHG STORE", "SYNTH BEGIN"]
 END_TOKENS = ["PLI END", "BUFEXCHG RETRIEVE", "SYNTH END"]
 EXCEPTION_LIST = ["2429c01.dat"]
 
+COMMON_SUBSTITUTIONS = [
+    ("3070a", "3070b"), # 1 x 1 tile
+    ("3069a", "3069b"), # 1 x 2 tile
+    ("3068a", "3068b"), # 2 x 2 tile
+    ("x224", "41751"),  # windscreen
+    ("4864a", "87552"),  # 1 x 2 x 2 panel with side supports
+    ("4864b", "87552"),  # 1 x 2 x 2 panel with side supports
+    ("2362a", "87544"),  # 1 x 2 x 3 panel with side supports
+    ("2362b", "87544"),  # 1 x 2 x 3 panel with side supports
+    ("60583", "60583b"),  # 1 x 1 x 3 brick with clips
+    ("60583a", "60583b"),
+    ("3245a", "3245c"),  # 1 x 2 x 2 brick
+    ("3245b", "3245c"), 
+    ("3794", "15573"),  # 1 x 2 jumper plate
+    ("3794a", "15573"),
+    ("3794b", "15573"),
+    ("4215a", "60581"), # 1 x 4 x 3 panel with side supports
+    ("4215b", "60581"),
+    ("4215", "60581"),
+    # ["2429c01", "73983"],  # 1 x 4 hinge plate complete
+    ["73983", "2429c01"],  # 1 x 4 hinge plate complete
+]
+
+def substitute_part(part):
+    for e in COMMON_SUBSTITUTIONS:
+        if part.name == e[0]:
+            part.name = e[1]
+    return part
 
 def line_has_all_tokens(line, tokenlist):
     for t in tokenlist:
@@ -181,6 +211,7 @@ def recursive_parse_model(
             if only_submodel is None:
                 part = LDRPart()
                 part.from_str(e["ldrtext"])
+                part = substitute_part(part)
                 part.transform(matrix=m, offset=o)
                 parts.append(part)
 
@@ -207,6 +238,42 @@ def unique_set(items):
             udict[e] += 1
     return udict
 
+def key_name(elem):
+    return elem.name
+
+def key_colour(elem):
+    return elem.attrib.colour
+
+def key_colour(elem):
+    return elem.attrib.colour
+
+def get_sha1_hash(parts):
+    """Gets a normalized sha1 hash LDRPart objects"""
+    sp = []
+    for p in parts:
+        sp.append((p, p.sha1hash()))
+    sp.sort(key=lambda x: x[1])
+    shash = hashlib.sha1()
+    for p in sp:
+        shash.update(bytes(p[1], encoding="utf8"))
+    return shash.hexdigest()
+
+def sort_parts(parts, key="name", order="ascending"):
+    """Sorts a list of LDRPart objects by key"""
+    sp = []
+    if key.lower() == "sha1":
+        for p in parts:
+            sp.append((p, p.sha1hash()))
+        sp.sort(key=lambda x: x[1])
+        xp = []
+        for p in sp:
+            xp.append(sp[0])
+        return xp
+    if key.lower() == "name":
+        sp.sort(key=key_name, reverse=True if order.lower() == "descending" else False)
+    elif key.lower() == "colour":
+        sp.sort(key=key_colour, reverse=True if order.lower() == "descending" else False)
+    return sp
 
 class LDRModel:
     PARAMS = {
@@ -416,10 +483,26 @@ class LDRModel:
                 level = max(level, v["parent"])
         return level
 
+    def is_parent_a_callout(self, idx):
+        """Returns True if at the index into the unwrapped model
+        a callout step is contained in another callout."""
+        my_parent = self.callout_parent(idx)
+        if my_parent > 0:
+            for k, v in self.callouts.items():
+                if v["level"] == my_parent and idx >= k and idx <= v["end"]:
+                    return True
+        return False
+
     def has_assembly_arrows(self, idx):
         meta = self.unwrapped[idx]["meta"]
         for m in meta:
             if "arrow_begin" in m:
+                return True
+        return False
+
+    def is_no_callout_meta(self, meta):
+        for m in meta:
+            if "no_callout" in m:
                 return True
         return False
 
@@ -535,6 +618,7 @@ class LDRModel:
             callout_start = []
             callout_end = []
             callout_parent = []
+            dont_callout_models = []
             for i, e in enumerate(unwrapped):
                 level = e["level"]
                 next_level = (
@@ -550,6 +634,18 @@ class LDRModel:
                     else e["num_steps"]
                 )
                 prev_steps = e["num_steps"] if i == 0 else unwrapped[i - 1]["num_steps"]
+                dont_callout = (
+                    self.is_no_callout_meta(unwrapped[i]["meta"]) 
+                    if i < len(unwrapped)
+                    else False
+                )
+                dont_callout_next = (
+                    self.is_no_callout_meta(unwrapped[i + 1]["meta"]) 
+                    if i < len(unwrapped) - 1
+                    else False
+                )
+                if dont_callout:
+                    dont_callout_models.append(e["model"])
                 page_break = (
                     True if level_up and next_steps >= self.callout_step_thr else False
                 )
@@ -558,8 +654,18 @@ class LDRModel:
                     if level_down and e["num_steps"] >= self.callout_step_thr
                     else page_break
                 )
+                page_break = (
+                    True
+                    if level_up and dont_callout_next
+                    else page_break
+                )
+                page_break = (
+                    True
+                    if level_down and e["model"] in dont_callout_models
+                    else page_break
+                )
                 no_pli = True if levelled_down and prev_break else False
-                if levelled_up and e["num_steps"] < self.callout_step_thr:
+                if levelled_up and (e["num_steps"] < self.callout_step_thr) and not dont_callout:
                     callout.append(level)
                     callout_start.append(i)
                     callout_parent.append(prev_level)
@@ -652,6 +758,7 @@ class LDRModel:
                     np.move_by(offset)
                     tparts.append(str(np))
                 else:
+                    # print("part is None ", p)
                     tparts.append(p)
             return tparts
 

@@ -70,8 +70,8 @@ class ArrowContext:
     def __init__(self, colour=804, length=2):
         self.colour = colour
         self.length = length
-        self.scale = 10
-        self.yscale = 10
+        self.scale = 25
+        self.yscale = 20
         self.offset = Vector(0, 0, 0)
         self.rotstep = Vector(0, 0, 0)
         self.ratio = 0.5
@@ -92,98 +92,68 @@ class ArrowContext:
         rotxz = norm_angle(self.rotstep.x + self.rotstep.z)
         rotyz = norm_angle(self.rotstep.y + self.rotstep.z)
 
-        # rotxy = norm_angle(self.rotstep.x) + norm_angle(self.rotstep.y)
-        # rotxz = norm_angle(self.rotstep.x) + norm_angle(self.rotstep.z)
-        # rotyz = norm_angle(self.rotstep.y) + norm_angle(self.rotstep.z)
-
-        # rotxy = rotxy - abs(self.rotstep.x - self.rotstep.y) % 90
-        # rotxz = rotxz - abs(self.rotstep.x - self.rotstep.z) % 90
-        # rotyz = rotyz - abs(self.rotstep.y - self.rotstep.z) % 90
-        # rm = euler_to_rot_matrix((self.rotstep.x, self.rotstep.y, -self.rotstep.z))
-        # rx, ry, rz = norm_angle(self.rotstep.x), norm_angle(self.rotstep.y), norm_angle(self.rotstep.z)
-        # rotxy = euler_to_rot_matrix((rx, ry, rz))
-        # rotxz = euler_to_rot_matrix((rx, ry, rz)
-        # rotyz = euler_to_rot_matrix((rx, ry, rz))
-        # rotxy = euler_to_rot_matrix((rx, ry, 0))
-        # rotxz = euler_to_rot_matrix((rx, 0, rz))
-        # rotyz = euler_to_rot_matrix((0, ry, rz))
-        # rotxy = euler_to_rot_matrix((0, 0, self.rotstep.z)).transpose()
-        # rotxz = euler_to_rot_matrix((0, self.rotstep.y, 0)).transpose()
-        # rotyz = euler_to_rot_matrix((self.rotstep.x, 0, 0)).transpose()
-
-        # if (offset.x > 0) and mask != "x":
-        #     return ARROW_MX * rotyz
-        # elif (offset.x < 0) and mask != "x":
-        #     return ARROW_PX * rotyz
-
-        # elif (offset.y > 0) and mask != "y":
-        #     return ARROW_PY * rotxz
-        # elif (offset.y < 0) and mask != "y":
-        #     return ARROW_MY * rotxz
-
-        # elif (offset.z > 0) and mask != "z":
-        #     return ARROW_MZ * rotxy
-        # elif (offset.z < 0) and mask != "z":
-        #     return ARROW_PZ * rotxy
-        # return Identity()
-
-
-
         if invert:
             rotxy = rotxy + 180
             rotxz = rotxz + 180
             rotyz = rotyz + 180
-        if (offset.x > 0) and mask != "x":
+        if (offset.x > 0) and "x" not in mask:
             return ARROW_MX.rotate(-rotyz + tilt, ZAxis)
-        elif (offset.x < 0) and mask != "x":
+        elif (offset.x < 0) and "x" not in mask:
             return ARROW_PX.rotate(rotyz + tilt, ZAxis)
 
-        elif (offset.y > 0) and mask != "y":
+        if (offset.y > 0) and "y" not in mask:
             return ARROW_PY.rotate(rotxz + tilt, ZAxis)
-        elif (offset.y < 0) and mask != "y":
+        elif (offset.y < 0) and "y" not in mask:
             return ARROW_MY.rotate(-rotxz + tilt, ZAxis)
 
-        elif (offset.z > 0) and mask != "z":
+        if (offset.z > 0) and "z" not in mask:
             return ARROW_MZ.rotate(-rotxy + tilt, ZAxis)
-        elif (offset.z < 0) and mask != "z":
+        elif (offset.z < 0) and "z" not in mask:
             return ARROW_PZ.rotate(rotxy + tilt, ZAxis)
         return Identity()
 
     def loc_for_offset(self, offset, length, mask="", ratio=0.5):
         loc_offset = Vector(0, 0, 0)
         ratio1 = 1.0 + ratio
-        if (offset.x > 0) and mask != "x":
-            loc_offset.x = -ratio1 * length * self.scale
-        elif (offset.x < 0) and mask != "x":
-            loc_offset.x = ratio1 * length * self.scale
-        elif (offset.y > 0) and mask != "y":
-            loc_offset.y = -ratio1 * length * self.yscale
-        elif (offset.y < 0) and mask != "y":
-            loc_offset.y = ratio1 * length * self.yscale
-        elif (offset.z > 0) and mask != "z":
-            loc_offset.z = -ratio1 * length * self.scale
-        elif (offset.z < 0) and mask != "z":
-            loc_offset.z = ratio1 * length * self.scale
-        if mask == "x":
-            loc_offset += Vector(offset.x, ratio * offset.y, ratio * offset.z)
-        elif mask == "y":
-            loc_offset += Vector(ratio * offset.x, offset.y, ratio * offset.z)
-        elif mask == "z":
-            loc_offset += Vector(ratio * offset.x, ratio * offset.y, offset.z)
-        else:
-            loc_offset += ratio * offset
+        if (offset.x > 0) and "x" not in mask:
+            loc_offset.x = offset.x / 2 - float(length)*ratio * self.scale
+        elif (offset.x < 0) and "x" not in mask:
+            loc_offset.x = offset.x / 2 + float(length)*ratio * self.scale
+        if (offset.y > 0) and "y" not in mask:
+            loc_offset.y = offset.y / 2 - float(length)*ratio * self.yscale
+        elif (offset.y < 0) and "y" not in mask:
+            loc_offset.y = offset.y / 2 + float(length)*ratio * self.yscale
+        if (offset.z > 0) and "z" not in mask:
+            loc_offset.z = offset.z / 2 - float(length)*ratio * self.scale
+        elif (offset.z < 0) and "z" not in mask:
+            loc_offset.z = offset.z /2 + float(length)*ratio * self.scale
+        if "x" in mask:
+            loc_offset += Vector(offset.x, 0, 0)
+        if "y" in mask:
+            loc_offset += Vector(0, offset.y, 0)
+        if "z" in mask:
+            loc_offset += Vector(0, 0, offset.z)
+        # else:
+        #     loc_offset += ratio * offset
+        # if "x" in mask:
+        #     loc_offset += Vector(offset.x, ratio * offset.y, ratio * offset.z)
+        # elif "y" in mask:
+        #     loc_offset += Vector(ratio * offset.x, offset.y, ratio * offset.z)
+        # elif "z" in mask:
+        #     loc_offset += Vector(ratio * offset.x, ratio * offset.y, offset.z)
+        # else:
+        #     loc_offset += ratio * offset
+        # print("len: %s offset: %s  mask: %s ratio: %.1f loc_off: %s" %(length, str(offset), mask, ratio, str(loc_offset)))
         return loc_offset
 
     def part_loc_for_offset(self, offset, mask=""):
         loc_offset = Vector(0, 0, 0)
-        if (offset.x != 0) and mask != "x":
+        if abs(offset.x) > 0.1 and "x" not in mask:
             loc_offset.x = offset.x
-        elif (offset.y != 0) and mask != "y":
+        if abs(offset.y) > 0.1 and "y" not in mask:
             loc_offset.y = offset.y
-        elif (offset.z != 0) and mask != "z":
+        if abs(offset.z) > 0.1 and "z" not in mask:
             loc_offset.z = offset.z
-        else:
-            loc_offset = offset
         return loc_offset
 
     def _mask_axis(self, offsets):
@@ -192,16 +162,17 @@ class ArrowContext:
             return ""
         mx, my, mz = 1e18, 1e18, 1e18
         nx, ny, nz = -1e18, -1e18, -1e18
+        mask = ""
         for o in offsets:
             mx, my, mz = min(mx, o.x), min(my, o.y), min(mz, o.z)
             nx, ny, nz = max(nx, o.x), max(ny, o.y), max(nz, o.z)
         if abs(nx - mx) > 0:
-            return "x"
-        elif abs(ny - my) > 0:
-            return "y"
-        elif abs(nz - mz) > 0:
-            return "z"
-        return ""
+            mask = mask + "x"
+        if abs(ny - my) > 0:
+            mask = mask + "y"
+        if abs(nz - mz) > 0:
+            mask = mask + "z"
+        return mask
 
     def arrow_from_dict(self, dict):
         arrows = []

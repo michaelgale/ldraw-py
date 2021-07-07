@@ -40,6 +40,7 @@ SPECIAL_TOKENS = {
     "arrow_end": ["!PY ARROW END"],
     "callout": ["!PY CALLOUT"],
     "bom": ["!LPUB INSERT BOM", "!PY BOM"],
+    "no_callout": ["!PY NO_CALLOUT"],
 }
 
 

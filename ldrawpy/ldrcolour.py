@@ -372,7 +372,7 @@ def FillTitlesFromLDRCode(ldrCode):
         fillTitles = [LDR_COLOUR_NAME[1], LDR_COLOUR_NAME[70]]
     elif ldrCode == LDR_BLUBLU_COLOUR:
         fillTitles = [LDR_COLOUR_NAME[1], LDR_COLOUR_NAME[73]]
-    elif ldrCode == LDR_DKREDBLU_COLOUR:  
+    elif ldrCode == LDR_DKREDBLU_COLOUR:
         fillTitles = [LDR_COLOUR_NAME[272], LDR_COLOUR_NAME[320]]
 
     elif ldrCode == LDR_BRGREEN_COLOUR:

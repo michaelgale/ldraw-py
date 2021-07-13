@@ -204,23 +204,23 @@ class LDRPart:
         return True
 
     def is_same(self, other, ignore_location=False, ignore_colour=False):
-        if self.name != other.name:
+        if not self.name == other.name:
             return False
         if not ignore_colour:
-            if self.attrib.colour != other.attrib.colour:
+            if not self.attrib.colour == other.attrib.colour:
                 return False
         if not ignore_location:
             if not self.attrib.loc.almost_same_as(other.attrib.loc):
                 return False
-        if not self.attrib.matrix.is_almost_same_as(other.attrib.matrix):
-            return False
+        if not ignore_colour and not ignore_location:
+            if not self.sha1hash() == other.sha1hash():
+                return False
         return True
-    
+
     def is_coaligned(self, other):
         v1 = self.attrib.loc * self.attrib.matrix
         v2 = other.attrib.loc * other.attrib.matrix
         naxis = v1.is_colinear_with(v2)
-        # print(naxis, " : ", v1, v2)
         if naxis == 2:
             return True
         return False

@@ -46,9 +46,9 @@ END_TOKENS = ["PLI END", "BUFEXCHG RETRIEVE", "SYNTH END"]
 EXCEPTION_LIST = ["2429c01.dat"]
 
 COMMON_SUBSTITUTIONS = [
-    ("3070a", "3070b"), # 1 x 1 tile
-    ("3069a", "3069b"), # 1 x 2 tile
-    ("3068a", "3068b"), # 2 x 2 tile
+    ("3070a", "3070b"),  # 1 x 1 tile
+    ("3069a", "3069b"),  # 1 x 2 tile
+    ("3068a", "3068b"),  # 2 x 2 tile
     ("x224", "41751"),  # windscreen
     ("4864a", "87552"),  # 1 x 2 x 2 panel with side supports
     ("4864b", "87552"),  # 1 x 2 x 2 panel with side supports
@@ -57,22 +57,44 @@ COMMON_SUBSTITUTIONS = [
     ("60583", "60583b"),  # 1 x 1 x 3 brick with clips
     ("60583a", "60583b"),
     ("3245a", "3245c"),  # 1 x 2 x 2 brick
-    ("3245b", "3245c"), 
+    ("3245b", "3245c"),
     ("3794", "15573"),  # 1 x 2 jumper plate
     ("3794a", "15573"),
     ("3794b", "15573"),
-    ("4215a", "60581"), # 1 x 4 x 3 panel with side supports
+    ("4215a", "60581"),  # 1 x 4 x 3 panel with side supports
     ("4215b", "60581"),
     ("4215", "60581"),
     # ["2429c01", "73983"],  # 1 x 4 hinge plate complete
     ["73983", "2429c01"],  # 1 x 4 hinge plate complete
 ]
 
+
+def norm_angle(a):
+    """Normalizes an angle in degrees to -180 ~ +180 deg."""
+    a = a % 360
+    if a >= 0 and a <= 180:
+        return a
+    if a > 180:
+        return -180 + (-180 + a)
+    if a >= -180 and a < 0:
+        return a
+    return 180 + (a + 180)
+
+
+def norm_aspect(a):
+    """Normalizes the three angle components of aspect angle to -180 ~ +180 deg."""
+    na = []
+    for v in a:
+        na.append(norm_angle(v))
+    return tuple(na)
+
+
 def substitute_part(part):
     for e in COMMON_SUBSTITUTIONS:
         if part.name == e[0]:
             part.name = e[1]
     return part
+
 
 def line_has_all_tokens(line, tokenlist):
     for t in tokenlist:
@@ -238,14 +260,18 @@ def unique_set(items):
             udict[e] += 1
     return udict
 
+
 def key_name(elem):
     return elem.name
 
-def key_colour(elem):
-    return elem.attrib.colour
 
 def key_colour(elem):
     return elem.attrib.colour
+
+
+def key_colour(elem):
+    return elem.attrib.colour
+
 
 def get_sha1_hash(parts):
     """Gets a normalized sha1 hash LDRPart objects"""
@@ -257,6 +283,7 @@ def get_sha1_hash(parts):
     for p in sp:
         shash.update(bytes(p[1], encoding="utf8"))
     return shash.hexdigest()
+
 
 def sort_parts(parts, key="name", order="ascending"):
     """Sorts a list of LDRPart objects by key"""
@@ -272,8 +299,11 @@ def sort_parts(parts, key="name", order="ascending"):
     if key.lower() == "name":
         sp.sort(key=key_name, reverse=True if order.lower() == "descending" else False)
     elif key.lower() == "colour":
-        sp.sort(key=key_colour, reverse=True if order.lower() == "descending" else False)
+        sp.sort(
+            key=key_colour, reverse=True if order.lower() == "descending" else False
+        )
     return sp
+
 
 class LDRModel:
     PARAMS = {
@@ -292,6 +322,7 @@ class LDRModel:
 
     def __init__(self, filename, **kwargs):
         from brickbom import BOM, BOMPart
+
         self.filename = filename
         apply_params(self, kwargs, locals())
         _, self.title = split_path(filename)
@@ -635,12 +666,12 @@ class LDRModel:
                 )
                 prev_steps = e["num_steps"] if i == 0 else unwrapped[i - 1]["num_steps"]
                 dont_callout = (
-                    self.is_no_callout_meta(unwrapped[i]["meta"]) 
+                    self.is_no_callout_meta(unwrapped[i]["meta"])
                     if i < len(unwrapped)
                     else False
                 )
                 dont_callout_next = (
-                    self.is_no_callout_meta(unwrapped[i + 1]["meta"]) 
+                    self.is_no_callout_meta(unwrapped[i + 1]["meta"])
                     if i < len(unwrapped) - 1
                     else False
                 )
@@ -654,18 +685,18 @@ class LDRModel:
                     if level_down and e["num_steps"] >= self.callout_step_thr
                     else page_break
                 )
-                page_break = (
-                    True
-                    if level_up and dont_callout_next
-                    else page_break
-                )
+                page_break = True if level_up and dont_callout_next else page_break
                 page_break = (
                     True
                     if level_down and e["model"] in dont_callout_models
                     else page_break
                 )
                 no_pli = True if levelled_down and prev_break else False
-                if levelled_up and (e["num_steps"] < self.callout_step_thr) and not dont_callout:
+                if (
+                    levelled_up
+                    and (e["num_steps"] < self.callout_step_thr)
+                    and not dont_callout
+                ):
                     callout.append(level)
                     callout_start.append(i)
                     callout_parent.append(prev_level)
@@ -763,7 +794,7 @@ class LDRModel:
             return tparts
 
     def transform_colour(self, parts, to_colour, from_colour=None, as_str=False):
-        """ Transforms the colour of a provided list of parts. """
+        """Transforms the colour of a provided list of parts."""
         tparts = []
         if len(parts) < 1:
             return
@@ -884,10 +915,12 @@ class LDRModel:
                     aspect_change = True if step_num > 1 else False
                     ar = tuple([float(x) for x in cmd["rotation_rel"]["values"]])
                     current_aspect = (
-                        current_aspect[0] + ar[0],
-                        current_aspect[1] + ar[1],
-                        current_aspect[2] + ar[2],
+                        (current_aspect[0] + ar[0]),
+                        (current_aspect[1] + ar[1]),
+                        (current_aspect[2] + ar[2]),
                     )
+                    current_aspect = norm_aspect(current_aspect)
+
             # capture submodel references in this step
             subs = []
             for p in step_parts:

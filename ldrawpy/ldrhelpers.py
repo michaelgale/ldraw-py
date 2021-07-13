@@ -147,7 +147,7 @@ def ldrstring_from_list(parts):
 
 
 def merge_same_parts(parts, other, ignore_colour=False, as_str=False):
-    """ Merges parts + other where the the parts in other take precedence."""
+    """Merges parts + other where the the parts in other take precedence."""
     from .ldrprimitives import LDRPart
 
     op = ldrlist_from_parts(other)
@@ -167,7 +167,7 @@ def merge_same_parts(parts, other, ignore_colour=False, as_str=False):
 
 
 def remove_parts_from_list(parts, other, as_str=False):
-    """ Returns a list based on removing the parts from other from parts. """
+    """Returns a list based on removing the parts from other from parts."""
     pp = ldrlist_from_parts(parts)
     op = ldrlist_from_parts(other)
     np = []
@@ -177,3 +177,16 @@ def remove_parts_from_list(parts, other, as_str=False):
     if as_str:
         return ldrstring_from_list(np)
     return np
+
+
+def pprint_line(line):
+    from rich import print
+
+    ls = line.split()
+    if ls[0] == "1":
+        print(
+            "[white]%s [blue]%3s [green]%9s %9s %9s [cyan]%7s %7s %7s [yellow]%7s %7s %7s [cyan]%7s %7s %7s [red]%s"
+            % tuple([x for x in ls])
+        )
+    else:
+        print("[white]%s" % (line.rstrip()))

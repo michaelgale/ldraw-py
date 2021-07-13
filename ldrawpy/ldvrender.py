@@ -84,7 +84,7 @@ def _coord_str(x, y=None, sep=", "):
 
 
 class LDViewRender:
-    """ LDView render session helper class. """
+    """LDView render session helper class."""
 
     PARAMS = {
         "dpi": 300,
@@ -144,7 +144,7 @@ class LDViewRender:
         logmsg(msg, level=level, prefix="LDR", log_level=self.log_level)
 
     def render_from_str(self, ldrstr, outfile):
-        """ Render from a LDraw text string. """
+        """Render from a LDraw text string."""
         if self.log_output:
             s = ldrstr.splitlines()[0]
             self._logoutput(
@@ -155,7 +155,7 @@ class LDViewRender:
         self.render_from_file(self.ldr_temp_path, outfile)
 
     def render_from_parts(self, parts, outfile):
-        """ Render using a list of LDRPart objects. """
+        """Render using a list of LDRPart objects."""
         if self.log_output:
             self._logoutput("rendering parts (%s)..." % (crayons.green(len(parts))))
         ldrstr = []
@@ -165,7 +165,7 @@ class LDViewRender:
         self.render_from_str(ldrstr, outfile)
 
     def render_from_file(self, ldrfile, outfile):
-        """ Render from an LDraw file. """
+        """Render from an LDraw file."""
         tstart = datetime.now()
         if self.output_path is not None:
             path, name = split_path(outfile)
@@ -220,7 +220,7 @@ class LDViewRender:
             self.smooth(filename)
 
     def crop(self, filename):
-        """ Crop image file. """
+        """Crop image file."""
         tstart = datetime.now()
         im = Image.open(filename)
         bg = Image.new(im.mode, im.size, im.getpixel((1, 1)))
@@ -242,7 +242,7 @@ class LDViewRender:
             )
 
     def smooth(self, filename):
-        """ Apply a smoothing filter to image file. """
+        """Apply a smoothing filter to image file."""
         tstart = datetime.now()
         im = Image.open(filename)
         im = im.filter(ImageFilter.SMOOTH)

@@ -63,7 +63,7 @@ def value_after_token(tokens, value_token):
 
 
 def norm_angle(angle):
-    return (angle % 45)
+    return angle % 45
 
 
 class ArrowContext:
@@ -116,17 +116,17 @@ class ArrowContext:
         loc_offset = Vector(0, 0, 0)
         ratio1 = 1.0 + ratio
         if (offset.x > 0) and "x" not in mask:
-            loc_offset.x = offset.x / 2 - float(length)*ratio * self.scale
+            loc_offset.x = offset.x / 2 - float(length) * ratio * self.scale
         elif (offset.x < 0) and "x" not in mask:
-            loc_offset.x = offset.x / 2 + float(length)*ratio * self.scale
+            loc_offset.x = offset.x / 2 + float(length) * ratio * self.scale
         if (offset.y > 0) and "y" not in mask:
-            loc_offset.y = offset.y / 2 - float(length)*ratio * self.yscale
+            loc_offset.y = offset.y / 2 - float(length) * ratio * self.yscale
         elif (offset.y < 0) and "y" not in mask:
-            loc_offset.y = offset.y / 2 + float(length)*ratio * self.yscale
+            loc_offset.y = offset.y / 2 + float(length) * ratio * self.yscale
         if (offset.z > 0) and "z" not in mask:
-            loc_offset.z = offset.z / 2 - float(length)*ratio * self.scale
+            loc_offset.z = offset.z / 2 - float(length) * ratio * self.scale
         elif (offset.z < 0) and "z" not in mask:
-            loc_offset.z = offset.z /2 + float(length)*ratio * self.scale
+            loc_offset.z = offset.z / 2 + float(length) * ratio * self.scale
         if "x" in mask:
             loc_offset += Vector(offset.x, 0, 0)
         if "y" in mask:
@@ -157,7 +157,7 @@ class ArrowContext:
         return loc_offset
 
     def _mask_axis(self, offsets):
-        """ Determines which axis has a changing value and is not consistent in a list """
+        """Determines which axis has a changing value and is not consistent in a list"""
         if len(offsets) == 1:
             return ""
         mx, my, mz = 1e18, 1e18, 1e18
@@ -184,8 +184,12 @@ class ArrowContext:
             arrpart = LDRPart()
             arrpart.name = self.part_for_length(dict["length"])
             arrpart.attrib.loc = copy.copy(ldrpart.attrib.loc)
-            arrpart.attrib.loc += self.loc_for_offset(o, dict["length"], mask, ratio=dict["ratio"])
-            arrpart.attrib.matrix = self.matrix_for_offset(o, mask, invert=dict["invert"], tilt=dict["tilt"])
+            arrpart.attrib.loc += self.loc_for_offset(
+                o, dict["length"], mask, ratio=dict["ratio"]
+            )
+            arrpart.attrib.matrix = self.matrix_for_offset(
+                o, mask, invert=dict["invert"], tilt=dict["tilt"]
+            )
             arrpart.attrib.colour = dict["colour"]
             arrows.append(str(arrpart))
         return "".join(arrows)
@@ -224,21 +228,33 @@ def arrows_for_step(arrow_ctx, step, as_lpub=True, only_arrows=False, as_dict=Fa
                     idx = 0
                     try:
                         arrow_ctx.offset.append(
-                            Vector(float(ls[4+idx]), float(ls[5+idx]), float(ls[6+idx]))
+                            Vector(
+                                float(ls[4 + idx]),
+                                float(ls[5 + idx]),
+                                float(ls[6 + idx]),
+                            )
                         )
                     except:
                         pass
-                    if len(ls) > 7+idx:
+                    if len(ls) > 7 + idx:
                         try:
                             arrow_ctx.offset.append(
-                                Vector(float(ls[7+idx]), float(ls[8+idx]), float(ls[9+idx]))
+                                Vector(
+                                    float(ls[7 + idx]),
+                                    float(ls[8 + idx]),
+                                    float(ls[9 + idx]),
+                                )
                             )
                         except:
                             pass
-                    if len(ls) > 10+idx:
+                    if len(ls) > 10 + idx:
                         try:
                             arrow_ctx.offset.append(
-                                Vector(float(ls[10+idx]), float(ls[11+idx]), float(ls[12+idx]))
+                                Vector(
+                                    float(ls[10 + idx]),
+                                    float(ls[11 + idx]),
+                                    float(ls[12 + idx]),
+                                )
                             )
                         except:
                             pass
@@ -276,9 +292,21 @@ def arrows_for_step(arrow_ctx, step, as_lpub=True, only_arrows=False, as_dict=Fa
                         continue
 
         if in_arrow and lineType == 1:
-            item = arrow_ctx.dict_for_line(line, invert=False, ratio=arrow_ratio, colour=arrow_colour, tilt=arrow_tilt)
+            item = arrow_ctx.dict_for_line(
+                line,
+                invert=False,
+                ratio=arrow_ratio,
+                colour=arrow_colour,
+                tilt=arrow_tilt,
+            )
             arrow_parts.append(item)
-            item = arrow_ctx.dict_for_line(line, invert=True, ratio=arrow_ratio, colour=arrow_colour, tilt=arrow_tilt)
+            item = arrow_ctx.dict_for_line(
+                line,
+                invert=True,
+                ratio=arrow_ratio,
+                colour=arrow_colour,
+                tilt=arrow_tilt,
+            )
             arrow_parts.append(item)
         elif in_arrow == False:
             if not only_arrows:
@@ -312,9 +340,7 @@ def arrows_for_step(arrow_ctx, step, as_lpub=True, only_arrows=False, as_dict=Fa
                 ldrpart.wrapcallout = False
                 ldrpart.from_str(part["line"])
                 mask = arrow_ctx._mask_axis(part["offset"])
-                offset = arrow_ctx.part_loc_for_offset(
-                    part["offset"][0], mask
-                )
+                offset = arrow_ctx.part_loc_for_offset(part["offset"][0], mask)
                 ldrpart.attrib.loc += offset
                 ad["offset"] = offset
                 if i % 2 == 0:
@@ -324,7 +350,7 @@ def arrows_for_step(arrow_ctx, step, as_lpub=True, only_arrows=False, as_dict=Fa
                 step_lines.append(arrow_part.strip("\n"))
                 ad["arrow"] = arrow_part
                 arrow_dict.append(ad)
- 
+
     else:
         if "NOFILE" not in step:
             if len(step_lines) > 0:

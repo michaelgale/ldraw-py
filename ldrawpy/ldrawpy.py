@@ -23,25 +23,10 @@
 #
 # LDraw python module
 
-from .constants import *
-from .ldrprimitives import LDRTriangle, LDRLine
 from toolbox import *
 
-SPECIAL_TOKENS = {
-    "scale": ["!LPUB ASSEM MODEL_SCALE %-1", "!PY SCALE %-1"],
-    "rotation_abs": ["ROTSTEP %2 %3 %4 ABS"],
-    "rotation_rel": ["ROTSTEP %2 %3 %4 REL"],
-    "page_break": ["!LPUB INSERT PAGE", "!PY PAGE_BREAK"],
-    "columns": ["!PY COLUMNS %-1"],
-    "column_break": ["!PY COLUMN_BREAK"],
-    "arrow_begin": ["!PY ARROW BEGIN %4 %5 %6 %7 %8 %9 %10 %11 %12"],
-    "arrow_colour": ["!PY ARROW COLOUR %-1"],
-    "arrow_length": ["!PY ARROW LENGTH %-1"],
-    "arrow_end": ["!PY ARROW END"],
-    "callout": ["!PY CALLOUT"],
-    "bom": ["!LPUB INSERT BOM", "!PY BOM"],
-    "no_callout": ["!PY NO_CALLOUT"],
-}
+from .constants import *
+from .ldrprimitives import LDRTriangle, LDRLine
 
 
 def xyz_to_ldr(point, as_tuple=False):

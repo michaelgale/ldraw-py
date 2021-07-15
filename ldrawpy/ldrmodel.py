@@ -40,6 +40,12 @@ try:
     from brickbom import BOM, BOMPart
 except:
     pass
+try:
+    from rich import print
+
+    has_rich = True
+except:
+    has_rich = False
 
 START_TOKENS = ["PLI BEGIN IGN", "BUFEXCHG STORE", "SYNTH BEGIN"]
 END_TOKENS = ["PLI END", "BUFEXCHG RETRIEVE", "SYNTH END"]
@@ -67,26 +73,6 @@ COMMON_SUBSTITUTIONS = [
     # ["2429c01", "73983"],  # 1 x 4 hinge plate complete
     ["73983", "2429c01"],  # 1 x 4 hinge plate complete
 ]
-
-
-def norm_angle(a):
-    """Normalizes an angle in degrees to -180 ~ +180 deg."""
-    a = a % 360
-    if a >= 0 and a <= 180:
-        return a
-    if a > 180:
-        return -180 + (-180 + a)
-    if a >= -180 and a < 0:
-        return a
-    return 180 + (a + 180)
-
-
-def norm_aspect(a):
-    """Normalizes the three angle components of aspect angle to -180 ~ +180 deg."""
-    na = []
-    for v in a:
-        na.append(norm_angle(v))
-    return tuple(na)
 
 
 def substitute_part(part):
@@ -411,11 +397,42 @@ class LDRModel:
         level = "%-11s" % (level)
         parts = "(%2dx pcs)" % (len(v["pli_bom"]))
         meta = [v.keys() for v in v["meta"]]
-        meta = [list(x) for x in meta]
+        meta = [list(x) for x in meta if "columns" not in x]
+        for e in v["meta"]:
+            if "columns" in e:
+                meta.append("[green]COL%s[/]" % (e["columns"]["values"][0]))
         meta = ["".join(x) for x in meta]
         meta = " ".join(meta)
+        meta = meta.replace("arrow_begin", ":arrow_down:")
+        meta = meta.replace(" arrow_end", "")
+        meta = meta.replace(" arrow_length", "")
+        meta = meta.replace("rotation_rel", ":arrows_counterclockwise:REL")
+        meta = meta.replace("rotation_abs", ":arrows_counterclockwise:ABS")
+        meta = meta.replace("rotation_pre", ":arrows_counterclockwise:PRE")
+        meta = meta.replace("scale", ":triangular_ruler:")
+        meta = meta.replace("page_break", ":page_facing_up:")
+        meta = meta.replace("no_callout", ":prohibited:CA")
+        if has_rich:
+            if not co == "0":
+                fmt = "%3d. %s Step [yellow]%3d/%3d[/] Model: [red]%-16s[/]"
+            else:
+                if model_name == "root":
+                    fmt = "%3d. %s Step [green]%3d/%3d[/] Model: [green]%-16s[/]"
+                else:
+                    fmt = "%3d. %s Step [green]%3d/%3d[/] Model: [red]%-16s[/]"
+        else:
+            fmt = "%3d. %s Step %3d/%3d Model: %-16s"
+        fmt += " %s %s scale: %.2f (%3.0f,%4.0f,%3.0f)"
+        if co == "0":
+            fmt += " [bright_black]%1s[/]"
+        else:
+            fmt += " [yellow]%1s[/]"
+        if pb == "break":
+            fmt += " [magenta]BR[/] %s"
+        else:
+            fmt += " %s"
         print(
-            "%3d. %s Step %2d/%2d Model: %-16s %s %s scale: %.2f (%3.0f,%4.0f,%3.0f) %1s %s %s"
+            fmt
             % (
                 v["idx"],
                 level,
@@ -429,7 +446,6 @@ class LDRModel:
                 v["aspect"][1],
                 v["aspect"][2],
                 co,
-                pb,
                 meta,
             )
         )
@@ -534,6 +550,13 @@ class LDRModel:
     def is_no_callout_meta(self, meta):
         for m in meta:
             if "no_callout" in m:
+                return True
+        return False
+
+    def has_fixed_scale(self, idx):
+        meta = self.unwrapped[idx]["meta"]
+        for m in meta:
+            if "scale" in m:
                 return True
         return False
 
@@ -691,6 +714,11 @@ class LDRModel:
                     if level_down and e["model"] in dont_callout_models
                     else page_break
                 )
+                pb = False
+                for x in unwrapped[i]["meta"]:
+                    if "page_break" in x:
+                        pb = True
+                page_break = True if pb else page_break
                 no_pli = True if levelled_down and prev_break else False
                 if (
                     levelled_up
@@ -907,9 +935,9 @@ class LDRModel:
                 elif "callout" in cmd:
                     callout_style = cmd["callout"]["values"][0].lower()
                 elif "rotation_abs" in cmd:
-                    current_aspect = tuple(
-                        [float(x) for x in cmd["rotation_abs"]["values"]]
-                    )
+                    current_aspect = [float(x) for x in cmd["rotation_abs"]["values"]]
+                    current_aspect[0] = -current_aspect[0]
+                    current_aspect = tuple(current_aspect)
                     aspect_change = True if step_num > 1 else False
                 elif "rotation_rel" in cmd:
                     aspect_change = True if step_num > 1 else False
@@ -920,6 +948,11 @@ class LDRModel:
                         (current_aspect[2] + ar[2]),
                     )
                     current_aspect = norm_aspect(current_aspect)
+                elif "rotation_pre" in cmd:
+                    current_aspect = preset_aspect(
+                        current_aspect, cmd["rotation_pre"]["values"]
+                    )
+                    aspect_change = True if step_num > 1 else False
 
             # capture submodel references in this step
             subs = []

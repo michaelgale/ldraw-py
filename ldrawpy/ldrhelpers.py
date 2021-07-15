@@ -190,3 +190,60 @@ def pprint_line(line):
         )
     else:
         print("[white]%s" % (line.rstrip()))
+
+
+def norm_angle(a):
+    """Normalizes an angle in degrees to -180 ~ +180 deg."""
+    a = a % 360
+    if a >= 0 and a <= 180:
+        return a
+    if a > 180:
+        return -180 + (-180 + a)
+    if a >= -180 and a < 0:
+        return a
+    return 180 + (a + 180)
+
+
+def norm_aspect(a):
+    """Normalizes the three angle components of aspect angle to -180 ~ +180 deg."""
+    na = []
+    for v in a:
+        na.append(norm_angle(v))
+    return tuple(na)
+
+
+def _flip_x(a):
+    return (-a[0], a[1], a[2])
+
+
+def _add_aspect(a, b):
+    new_aspect = (
+        a[0] + b[0],
+        a[1] + b[1],
+        a[2] + b[2],
+    )
+    new_aspect = norm_aspect(new_aspect)
+    return new_aspect
+
+
+def preset_aspect(current_aspect, aspect_change):
+    if isinstance(aspect_change, list):
+        changes = aspect_change
+    else:
+        changes = [aspect_change]
+    new_aspect = tuple(current_aspect)
+    for aspect in changes:
+        a = aspect.lower()
+        if a in ASPECT_DICT:
+            new_aspect = _flip_x(ASPECT_DICT[a])
+        elif a in FLIP_DICT:
+            r = FLIP_DICT[a]
+            new_aspect = _add_aspect(new_aspect, r)
+        elif a == "down":
+            if new_aspect[0] < 0:
+                new_aspect = (145, new_aspect[1], new_aspect[2])
+        elif a == "up":
+            if new_aspect[0] > 0:
+                new_aspect = (-35, new_aspect[1], new_aspect[2])
+
+    return norm_aspect(new_aspect)

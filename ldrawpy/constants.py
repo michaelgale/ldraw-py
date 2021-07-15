@@ -60,5 +60,75 @@ LDR_PINKPURP_COLOUR = 1027
 
 LDR_ANY_COLOUR_FILL = ["E6E6E6", "8EDAFF", "FFFF66", "FD908F"]
 
+
+SPECIAL_TOKENS = {
+    "scale": ["!LPUB ASSEM MODEL_SCALE %-1", "!PY SCALE %-1"],
+    "rotation_abs": ["ROTSTEP %2 %3 %4 ABS"],
+    "rotation_rel": ["ROTSTEP %2 %3 %4 REL"],
+    "page_break": ["!LPUB INSERT PAGE", "!PY PAGE_BREAK"],
+    "columns": ["!PY COLUMNS %-1"],
+    "column_break": ["!PY COLUMN_BREAK"],
+    "arrow_begin": ["!PY ARROW BEGIN %4 %5 %6 %7 %8 %9 %10 %11 %12"],
+    "arrow_colour": ["!PY ARROW COLOUR %-1"],
+    "arrow_length": ["!PY ARROW LENGTH %-1"],
+    "arrow_end": ["!PY ARROW END"],
+    "callout": ["!PY CALLOUT"],
+    "bom": ["!LPUB INSERT BOM", "!PY BOM"],
+    "no_callout": ["!PY NO_CALLOUT"],
+    "rotation_pre": ["!PY ROT %3 %4 %5"],
+}
+
 LDR_DEFAULT_SCALE = 1.0
 LDR_DEFAULT_ASPECT = (40, -55, 0)
+
+ASPECT_DICT = {
+    "front": (0, 0, 0),
+    "back": (0, 180, 0),
+    "right": (0, 90, 0),
+    "left": (0, -90, 0),
+    "top": (90, 0, 0),
+    "bottom": (-90, 0, 0),
+    "iso35": (35, 35, 0),
+    "iso45": (35, 45, 0),
+    "iso55": (35, 55, 0),
+    "iso90": (35, 90, 0),
+    "iso125": (35, 125, 0),
+    "iso135": (35, 135, 0),
+    "iso145": (35, 145, 0),
+    "iso-35": (35, -35, 0),
+    "iso-45": (35, -45, 0),
+    "iso-55": (35, -55, 0),
+    "iso-90": (35, -90, 0),
+    "iso-125": (35, -125, 0),
+    "iso-135": (35, -135, 0),
+    "iso-145": (35, -145, 0),
+    "iso180": (35, 180, 0),
+    "iso-180": (35, 180, 0),
+    "n": (35, 0, 0),
+    "nnw": (35, 35, 0),
+    "nw": (35, 45, 0),
+    "wnw": (35, 55, 0),
+    "w": (35, 90, 0),
+    "wsw": (35, 125, 0),
+    "sw": (35, 135, 0),
+    "ssw": (35, 145, 0),
+    "s": (35, 180, 0),
+    "sse": (35, -145, 0),
+    "se": (35, -135, 0),
+    "ese": (35, -125, 0),
+    "e": (35, -90, 0),
+    "ene": (35, -55, 0),
+    "ne": (35, -45, 0),
+    "nne": (35, -35, 0),
+}
+
+FLIP_DICT = {
+    "flip-x": (180, 0, 0),
+    "flip-y": (0, 180, 0),
+    "flip-z": (0, 0, 180),
+    "flipx": (180, 0, 0),
+    "flipy": (0, 180, 0),
+    "flipz": (0, 0, 180),
+    "rot90": (0, 90, 0),
+    "rot-90": (0, -90, 0),
+}

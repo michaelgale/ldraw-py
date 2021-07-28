@@ -72,6 +72,17 @@ COMMON_SUBSTITUTIONS = [
     ("4215", "60581"),
     # ["2429c01", "73983"],  # 1 x 4 hinge plate complete
     ["73983", "2429c01"],  # 1 x 4 hinge plate complete
+    ["3665a", "3665"],
+    ["3665b", "3665"],  # 2 x 1 45 deg inv slope
+    ["4081a", "4081b"],  # 1x1 plate with light ring
+    ["4085a", "60897"],  # 1x1 plate with vert clip
+    ["4085b", "60897"],
+    ["4085c", "60897"],
+    ["6019", "61252"],  # 1x1 plate with horz clip
+    ["59426", "32209"],  # technic 5.5 axle
+    ["48729", "48729b"],  # bar with clip
+    ["48729a", "48729b"],
+    ["41005", "48729b"],
 ]
 
 
@@ -406,12 +417,15 @@ class LDRModel:
         meta = meta.replace("arrow_begin", ":arrow_down:")
         meta = meta.replace(" arrow_end", "")
         meta = meta.replace(" arrow_length", "")
-        meta = meta.replace("rotation_rel", ":arrows_counterclockwise:REL")
-        meta = meta.replace("rotation_abs", ":arrows_counterclockwise:ABS")
-        meta = meta.replace("rotation_pre", ":arrows_counterclockwise:PRE")
+        meta = meta.replace("rotation_rel", ":arrows_counterclockwise:R")
+        meta = meta.replace("rotation_abs", ":arrows_counterclockwise:A")
+        meta = meta.replace("rotation_pre", ":arrows_counterclockwise:P")
+        meta = meta.replace("preview_aspect", ":arrows_counterclockwise:M")
+        meta = meta.replace("model_scale", ":triangular_ruler:M")
         meta = meta.replace("scale", ":triangular_ruler:")
         meta = meta.replace("page_break", ":page_facing_up:")
         meta = meta.replace("no_callout", ":prohibited:CA")
+        meta = meta.replace("no_preview", ":prohibited:PR")
         if has_rich:
             if not co == "0":
                 fmt = "%3d. %s Step [yellow]%3d/%3d[/] Model: [red]%-16s[/]"
@@ -521,6 +535,25 @@ class LDRModel:
                 return True
         return False
 
+    def callout_has_meta(self, idx, tag):
+        """Returns True if the index to the unwrapped model points to a
+        a callout whose model has a specified meta tag."""
+        for k, v in self.callouts.items():
+            if idx >= k and idx <= v["end"]:
+                for i in range(k, v["end"] + 1):
+                    if self.step_has_meta(i, tag):
+                        return True
+        return False
+
+    def callout_meta_values(self, idx, tag):
+        """Returns the values of a callout whose model has a specified meta tag."""
+        for k, v in self.callouts.items():
+            if idx >= k and idx <= v["end"]:
+                for i in range(k, v["end"] + 1):
+                    if self.step_has_meta(i, tag):
+                        return self.step_meta_values(idx, tag)
+        return None
+
     def callout_parent(self, idx):
         """Returns the level into the model hierarchy of a callout's
         parent level at the specified index into the unwrapped model."""
@@ -547,18 +580,34 @@ class LDRModel:
                 return True
         return False
 
-    def is_no_callout_meta(self, meta):
+    def has_meta_tag(self, meta, tag):
         for m in meta:
-            if "no_callout" in m:
+            if tag in m:
                 return True
         return False
 
-    def has_fixed_scale(self, idx):
+    def step_meta_values(self, idx, tag):
         meta = self.unwrapped[idx]["meta"]
         for m in meta:
-            if "scale" in m:
+            if tag in m:
+                return m[tag]["values"]
+        return None
+
+    def step_has_meta(self, idx, tag):
+        meta = self.unwrapped[idx]["meta"]
+        for m in meta:
+            if tag in m:
                 return True
         return False
+
+    def has_no_preview_meta(self, idx):
+        return self.step_has_meta(idx, "no_preview")
+
+    def has_model_scale_meta(self, idx):
+        return self.step_has_meta(idx, "model_scale")
+
+    def has_fixed_scale_meta(self, idx):
+        return self.step_has_meta(idx, "scale")
 
     def print_parts_at_idx(self, idx):
         parts = self.unwrapped[idx]["step_parts"]
@@ -586,6 +635,22 @@ class LDRModel:
             if s["model"] == submodel:
                 last_idx = max(last_idx, s["idx"])
         return last_idx
+
+    def model_has_meta(self, submodel, tag):
+        submodel = submodel if ".ldr" in submodel else submodel + ".ldr"
+        for s in self.unwrapped:
+            if s["model"] == submodel:
+                if self.step_has_meta(s["idx"], tag):
+                    return True
+        return False
+
+    def model_meta_values(self, submodel, tag):
+        submodel = submodel if ".ldr" in submodel else submodel + ".ldr"
+        for s in self.unwrapped:
+            if s["model"] == submodel:
+                if self.step_has_meta(s["idx"], tag):
+                    return self.step_meta_values(s["idx"], tag)
+        return None
 
     def unwrap(self):
         self.unwrapped = self.unwrap_model()
@@ -647,6 +712,7 @@ class LDRModel:
                 "model": model_name,
                 "qty": model_qty,
                 "scale": v["scale"],
+                "model_scale": v["model_scale"],
                 "aspect": v["aspect"],
                 "parts": v["parts"],
                 "step_parts": v["step_parts"],
@@ -689,12 +755,12 @@ class LDRModel:
                 )
                 prev_steps = e["num_steps"] if i == 0 else unwrapped[i - 1]["num_steps"]
                 dont_callout = (
-                    self.is_no_callout_meta(unwrapped[i]["meta"])
+                    self.has_meta_tag(unwrapped[i]["meta"], "no_callout")
                     if i < len(unwrapped)
                     else False
                 )
                 dont_callout_next = (
-                    self.is_no_callout_meta(unwrapped[i + 1]["meta"])
+                    self.has_meta_tag(unwrapped[i + 1]["meta"], "no_callout")
                     if i < len(unwrapped) - 1
                     else False
                 )
@@ -728,6 +794,7 @@ class LDRModel:
                     callout.append(level)
                     callout_start.append(i)
                     callout_parent.append(prev_level)
+
                 elif levelled_down:
                     if len(callout) > 0:
                         callout.pop()
@@ -765,6 +832,11 @@ class LDRModel:
                     endlevel = umodel[x1]["callout"]
                     if x1 >= x0 and level == endlevel:
                         self.callouts[x0] = {"level": level, "end": x1, "parent": p}
+                        # set custom scale for the callout if configured
+                        if self.has_meta_tag(umodel[x0]["meta"], "model_scale"):
+                            self.callouts[x0]["scale"] = umodel[x0]["model_scale"]
+                            for ix in range(x0, x1 + 1):
+                                umodel[ix]["scale"] = umodel[ix]["model_scale"]
                         break
 
             return umodel
@@ -921,6 +993,7 @@ class LDRModel:
 
         current_aspect = self.global_aspect
         current_scale = self.global_scale
+        model_scale = self.global_scale
         callout_style = "top"
 
         step_num = 1
@@ -932,6 +1005,8 @@ class LDRModel:
             for cmd in meta_cmd:
                 if "scale" in cmd:
                     current_scale = float(cmd["scale"]["values"][0])
+                elif "model_scale" in cmd:
+                    model_scale = float(cmd["model_scale"]["values"][0])
                 elif "callout" in cmd:
                     callout_style = cmd["callout"]["values"][0].lower()
                 elif "rotation_abs" in cmd:
@@ -1007,6 +1082,7 @@ class LDRModel:
                 step_dict["sub_models"] = subs
                 step_dict["aspect"] = current_aspect
                 step_dict["scale"] = current_scale
+                step_dict["model_scale"] = model_scale
                 step_dict["raw_ldraw"] = step
                 step_dict["step_parts"] = pn
                 step_dict["pli_bom"] = pli_bom

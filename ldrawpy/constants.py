@@ -76,6 +76,9 @@ SPECIAL_TOKENS = {
     "bom": ["!LPUB INSERT BOM", "!PY BOM"],
     "no_callout": ["!PY NO_CALLOUT"],
     "rotation_pre": ["!PY ROT %3 %4 %5"],
+    "no_preview": ["!PY NO_PREVIEW"],
+    "model_scale": ["!PY MODEL_SCALE %-1"],
+    "preview_aspect": ["!PY PREVIEW_ASPECT %3 %4 %5"],
 }
 
 LDR_DEFAULT_SCALE = 1.0

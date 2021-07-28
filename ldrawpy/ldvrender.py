@@ -50,7 +50,8 @@ LDVIEW_DICT = {
     "LightVector": "0,1,1",
     "AllowPrimitiveSubstitution": 0,
     "HiResPrimitives": 1,
-    "UseQualityLighting": 1,
+    "UseQualityLighting": 0,
+    "ShowAxes": 0,
     "UseQualityStuds": 1,
     "TextureStuds": 0,
     "SaveActualSize": 0,
@@ -94,6 +95,7 @@ class LDViewRender:
         "image_smooth": False,
         "no_lines": False,
         "wireframe": False,
+        "quality_lighting": False,
         "line_thickness": 3,
         "scale": 1.0,
         "output_path": None,
@@ -191,6 +193,8 @@ class LDViewRender:
         for key, value in LDVIEW_DICT.items():
             if key == "EdgeThickness":
                 value = self.line_thickness
+            elif key == "UseQualityLighting":
+                value = 1 if self.quality_lighting else 0
             if self.no_lines:
                 if key == "EdgeThickness":
                     value = 0

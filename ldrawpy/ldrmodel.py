@@ -47,9 +47,12 @@ try:
 except:
     has_rich = False
 
-START_TOKENS = ["PLI BEGIN IGN", "BUFEXCHG STORE", "SYNTH BEGIN"]
-END_TOKENS = ["PLI END", "BUFEXCHG RETRIEVE", "SYNTH END"]
+START_TOKENS = ["PLI BEGIN IGN", "BUFEXCHG STORE"]
+END_TOKENS = ["PLI END", "BUFEXCHG RETRIEVE"]
+# START_TOKENS = ["PLI BEGIN IGN", "BUFEXCHG STORE", "SYNTH BEGIN"]
+# END_TOKENS = ["PLI END", "BUFEXCHG RETRIEVE", "SYNTH END"]
 EXCEPTION_LIST = ["2429c01.dat"]
+IGNORE_LIST = ["LS02"]
 
 COMMON_SUBSTITUTIONS = [
     ("3070a", "3070b"),  # 1 x 1 tile
@@ -83,6 +86,8 @@ COMMON_SUBSTITUTIONS = [
     ["48729", "48729b"],  # bar with clip
     ["48729a", "48729b"],
     ["41005", "48729b"],
+    ["4459", "2780"],  # Technic friction pin
+    ["44302", "44302a"],  # 1x2 click hinge plate
 ]
 
 
@@ -189,7 +194,6 @@ def recursive_parse_model(
     offset=None,
     matrix=None,
     reset_parts=False,
-    inv=False,
     only_submodel=None,
 ):
     """Recursively parses an LDraw model dictionary plus any submodels and
@@ -208,15 +212,8 @@ def recursive_parse_model(
             submodel = submodels[e["partname"]]
             p = LDRPart()
             p.from_str(e["ldrtext"])
-            # as we progress deeper in the recursive search, we need to
-            # transpose the rotation matrix every other level to maintain
-            # consistent geometry for the entire aggregate model
-            if inv:
-                new_matrix = m * p.attrib.matrix
-                new_loc = p.attrib.loc * m.transpose()
-            else:
-                new_matrix = m * p.attrib.matrix
-                new_loc = p.attrib.loc * m
+            new_matrix = m * p.attrib.matrix
+            new_loc = m * p.attrib.loc
             new_loc += o
             recursive_parse_model(
                 submodel,
@@ -224,7 +221,6 @@ def recursive_parse_model(
                 parts,
                 offset=new_loc,
                 matrix=new_matrix,
-                inv=not inv,
             )
         else:
             if only_submodel is None:
@@ -232,7 +228,11 @@ def recursive_parse_model(
                 part.from_str(e["ldrtext"])
                 part = substitute_part(part)
                 part.transform(matrix=m, offset=o)
-                parts.append(part)
+                if (
+                    not part.name in IGNORE_LIST
+                    and not part.name.upper() in IGNORE_LIST
+                ):
+                    parts.append(part)
 
 
 def _coord_str(x, y=None, sep=", "):
@@ -593,6 +593,14 @@ class LDRModel:
                 return m[tag]["values"]
         return None
 
+    def count_meta_keys(self, idx, tag):
+        meta = self.unwrapped[idx]["meta"]
+        count = 0
+        for m in meta:
+            if tag in m:
+                count += 1
+        return count
+
     def step_has_meta(self, idx, tag):
         meta = self.unwrapped[idx]["meta"]
         for m in meta:
@@ -784,6 +792,19 @@ class LDRModel:
                 for x in unwrapped[i]["meta"]:
                     if "page_break" in x:
                         pb = True
+                    elif "pli_proxy" in x:
+                        for item in x["pli_proxy"]["values"]:
+                            if "_" in item:
+                                sp = item.split("_")
+                                pname = sp[0]
+                                pcolour = int(sp[1])
+                            else:
+                                pname = item
+                                pcolour = LDR_DEF_COLOUR
+                            proxy_part = BOMPart(1, pname, pcolour)
+                            e["pli_bom"].add_part(proxy_part)
+                            self.bom.add_part(proxy_part)
+
                 page_break = True if pb else page_break
                 no_pli = True if levelled_down and prev_break else False
                 if (
@@ -845,9 +866,8 @@ class LDRModel:
     def transform_parts_to(self, parts, origin=None, aspect=None, use_exceptions=False):
         """Transforms the location and/or aspect angle of all the parts in
         a list to a fixed position and/or aspect angle."""
-        origin = origin if origin is not None else self.global_origin
         aspect = aspect if aspect is not None else self.global_aspect
-        if not isinstance(origin, Vector):
+        if origin is not None and not isinstance(origin, Vector):
             origin = Vector(origin[0], origin[1], origin[2])
         tparts = []
         for p in parts:
@@ -859,7 +879,8 @@ class LDRModel:
                 if p.name in self.pli_exceptions:
                     angle = self.pli_exceptions[p.name]
             np.set_rotation(angle)
-            np.move_to(origin)
+            if origin is not None:
+                np.move_to(origin)
             tparts.append(np)
         return tparts
 
@@ -867,9 +888,8 @@ class LDRModel:
         """Transforms the geometry (location and or aspect angle) of all
         the parts in a list.  The transform is applied as an offset to
         the existing part geometry."""
-        offset = offset if offset is not None else self.global_origin
         aspect = aspect if aspect is not None else self.global_aspect
-        if not isinstance(offset, Vector):
+        if offset is not None and not isinstance(offset, Vector):
             offset = Vector(offset[0], offset[1], offset[2])
         tparts = []
         if len(parts) < 1:
@@ -878,7 +898,8 @@ class LDRModel:
             for p in parts:
                 np = p.copy()
                 np.rotate_by(aspect)
-                np.move_by(offset)
+                if offset is not None:
+                    np.move_by(offset)
                 tparts.append(np)
             return tparts
         else:
@@ -886,7 +907,8 @@ class LDRModel:
                 np = LDRPart()
                 if np.from_str(p) is not None:
                     np.rotate_by(aspect)
-                    np.move_by(offset)
+                    if offset is not None:
+                        np.move_by(offset)
                     tparts.append(str(np))
                 else:
                     # print("part is None ", p)
@@ -1000,6 +1022,7 @@ class LDRModel:
         progress_bar(0, len(steps), "Parsing:", length=50)
         for i, step in enumerate(steps):
             aspect_change = False
+            proxy_parts = []
             step_parts = get_parts_from_model(step)
             meta_cmd = get_meta_commands(step)
             for cmd in meta_cmd:
@@ -1028,6 +1051,17 @@ class LDRModel:
                         current_aspect, cmd["rotation_pre"]["values"]
                     )
                     aspect_change = True if step_num > 1 else False
+                elif "pli_proxy" in cmd:
+                    for item in cmd["pli_proxy"]["values"]:
+                        if "_" in item:
+                            sp = item.split("_")
+                            pname = sp[0]
+                            pcolour = sp[1]
+                        else:
+                            pname = item
+                            pcolour = LDR_DEF_COLOUR
+                        proxy_part = LDRPart(colour=pcolour, name=pname)
+                        proxy_parts.append(proxy_part)
 
             # capture submodel references in this step
             subs = []
@@ -1046,6 +1080,15 @@ class LDRModel:
                 aspect=self.pli_aspect,
                 use_exceptions=True,
             )
+            # check for proxy parts added to step for PLI
+            if len(proxy_parts) > 0:
+                proxy_parts = self.transform_parts_to(
+                    proxy_parts,
+                    origin=(0, 0, 0),
+                    aspect=self.pli_aspect,
+                    use_exceptions=True,
+                )
+                pli.extend(proxy_parts)
             # submodel parts stored in separate dictionaries for convenient
             # access if required
             sub_dict = {}
@@ -1061,10 +1104,12 @@ class LDRModel:
                 pn = self.transform_parts(sub_parts, aspect=current_aspect)
                 sub_dict[sub] = pn
 
+            step_dict = {}
             if len(pli) > 0:
                 model_pli[step_num] = pli
                 # Store a BOM object representation of the parts for convenience
                 pli_bom = BOM()
+                pli_bom.ignore_parts = self.bom.ignore_parts
                 for p in pli:
                     pli_bom.add_part(BOMPart(1, p.name, p.attrib.colour))
                     if is_top_level:
@@ -1077,7 +1122,6 @@ class LDRModel:
                 # store only the parts added in this step
                 pn = self.transform_parts(parts_in_step, aspect=current_aspect)
                 # put all the collection info into a dictionary
-                step_dict = {}
                 step_dict["parts"] = p
                 step_dict["sub_models"] = subs
                 step_dict["aspect"] = current_aspect
@@ -1093,5 +1137,4 @@ class LDRModel:
                 step_num += 1
 
             progress_bar(i, len(steps), "Parsing:", length=50)
-
         return model_pli, model_steps

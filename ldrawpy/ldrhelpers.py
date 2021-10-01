@@ -29,6 +29,12 @@ from toolbox import *
 from ldrawpy import *
 
 
+def quantize(x):
+    """Quantizes an string LDraw value to 4 decimal places"""
+    v = decimal.Decimal(x.strip()).quantize(decimal.Decimal(10) ** -4)
+    return float(v)
+
+
 def mm2LDU(x):
     return x * 2.5
 

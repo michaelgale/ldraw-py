@@ -31,14 +31,14 @@ from functools import reduce
 
 from toolbox import *
 from ldrawpy import *
-from .ldrhelpers import VectorStr, MatStr
+from .ldrhelpers import VectorStr, MatStr, quantize
 
 
 class LDRAttrib:
     __slots__ = ["colour", "units", "loc", "matrix"]
 
     def __init__(self, colour=LDR_DEF_COLOUR, units="ldu"):
-        self.colour = colour
+        self.colour = int(colour)
         self.units = units
         self.loc = Vector(0, 0, 0)
         self.matrix = Identity()
@@ -154,7 +154,7 @@ class LDRPart:
     def __init__(self, colour=LDR_DEF_COLOUR, name=None, units="ldu"):
         self.attrib = LDRAttrib(colour, units)
         self.name = name if name is not None else ""
-        self.wrapcallout = True
+        self.wrapcallout = False
 
     def __str__(self):
         tup = tuple(reduce(lambda row1, row2: row1 + row2, self.attrib.matrix.rows))
@@ -258,21 +258,25 @@ class LDRPart:
             line_type = int(splitLine[0].lstrip())
             if line_type == 1:
                 self.attrib.colour = int(splitLine[1])
-                self.attrib.loc.x = float(splitLine[2])
-                self.attrib.loc.y = float(splitLine[3])
-                self.attrib.loc.z = float(splitLine[4])
+                self.attrib.loc.x = quantize(splitLine[2])
+                self.attrib.loc.y = quantize(splitLine[3])
+                self.attrib.loc.z = quantize(splitLine[4])
                 self.attrib.matrix = Matrix(
                     [
-                        [float(splitLine[5]), float(splitLine[6]), float(splitLine[7])],
                         [
-                            float(splitLine[8]),
-                            float(splitLine[9]),
-                            float(splitLine[10]),
+                            quantize(splitLine[5]),
+                            quantize(splitLine[6]),
+                            quantize(splitLine[7]),
                         ],
                         [
-                            float(splitLine[11]),
-                            float(splitLine[12]),
-                            float(splitLine[13]),
+                            quantize(splitLine[8]),
+                            quantize(splitLine[9]),
+                            quantize(splitLine[10]),
+                        ],
+                        [
+                            quantize(splitLine[11]),
+                            quantize(splitLine[12]),
+                            quantize(splitLine[13]),
                         ],
                     ]
                 )

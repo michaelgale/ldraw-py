@@ -58,6 +58,7 @@ LDVIEW_DICT = {
     "SaveAlpha": 1,
     "AutoCrop": 0,
     "LineSmoothing": 1,
+    "Texmaps": 1,
 }
 # 10.0 / tan(0.005 deg)
 LDU_DISTANCE = 114591

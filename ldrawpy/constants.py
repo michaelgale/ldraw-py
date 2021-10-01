@@ -75,10 +75,13 @@ SPECIAL_TOKENS = {
     "callout": ["!PY CALLOUT"],
     "bom": ["!LPUB INSERT BOM", "!PY BOM"],
     "no_callout": ["!PY NO_CALLOUT"],
+    "no_rotate_icon": ["!PY NO_ROTATE_ICON"],
     "rotation_pre": ["!PY ROT %3 %4 %5"],
     "no_preview": ["!PY NO_PREVIEW"],
     "model_scale": ["!PY MODEL_SCALE %-1"],
     "preview_aspect": ["!PY PREVIEW_ASPECT %3 %4 %5"],
+    "preview_scale": ["!PY PREVIEW_SCALE %3"],
+    "pli_proxy": ["!PY PLI_PROXY %3 %4 %5 %6 %7"],
 }
 
 LDR_DEFAULT_SCALE = 1.0

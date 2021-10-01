@@ -308,7 +308,7 @@ def arrows_for_step(arrow_ctx, step, as_lpub=True, only_arrows=False, as_dict=Fa
                 tilt=arrow_tilt,
             )
             arrow_parts.append(item)
-        elif in_arrow == False:
+        elif not in_arrow and lineType == 1:
             if not only_arrows:
                 step_lines.append(line)
 
@@ -406,16 +406,13 @@ def remove_offset_parts(parts, oparts, arrow_dict, as_str=False):
                 v1 = p.attrib.loc * p.attrib.matrix
                 v2 = o.attrib.loc * o.attrib.matrix
                 for offset in offsets:
-                    # va = offset * arrow.attrib.matrix
-                    # vm = v2.copy() + va
-                    # print("part1: %s / %s" % (str(p), str(v1)))
-                    # print("part2: %s / %s" % (str(o), str(v2)))
                     vd = abs(v2.copy() - v1.copy())
                     vo = abs(offset)
-                    # print("offset: %s  vm: %s  vd: %s vo: %s\n" % (str(offset), str(vm), str(vd), str(vo)))
-                    # if v1.almost_same_as(vm, tolerance=0.1):
-                    if abs(vd - vo) < 0.1:
+                    ld = abs(p.attrib.loc - o.attrib.loc)
+                    if abs(vd - vo) < 0.1 and abs(ld - vo) < 0.1:
                         matched = True
+            if matched:
+                break
 
         if not matched:
             np.append(p)

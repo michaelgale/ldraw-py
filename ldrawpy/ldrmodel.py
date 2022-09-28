@@ -74,20 +74,20 @@ COMMON_SUBSTITUTIONS = [
     ("4215b", "60581"),
     ("4215", "60581"),
     # ["2429c01", "73983"],  # 1 x 4 hinge plate complete
-    ["73983", "2429c01"],  # 1 x 4 hinge plate complete
-    ["3665a", "3665"],
-    ["3665b", "3665"],  # 2 x 1 45 deg inv slope
-    ["4081a", "4081b"],  # 1x1 plate with light ring
-    ["4085a", "60897"],  # 1x1 plate with vert clip
-    ["4085b", "60897"],
-    ["4085c", "60897"],
-    ["6019", "61252"],  # 1x1 plate with horz clip
-    ["59426", "32209"],  # technic 5.5 axle
-    ["48729", "48729b"],  # bar with clip
-    ["48729a", "48729b"],
-    ["41005", "48729b"],
-    ["4459", "2780"],  # Technic friction pin
-    ["44302", "44302a"],  # 1x2 click hinge plate
+    ("73983", "2429c01"),  # 1 x 4 hinge plate complete
+    ("3665a", "3665"),
+    ("3665b", "3665"),  # 2 x 1 45 deg inv slope
+    ("4081a", "4081b"),  # 1x1 plate with light ring
+    ("4085a", "60897"),  # 1x1 plate with vert clip
+    ("4085b", "60897"),
+    ("4085c", "60897"),
+    ("6019", "61252"),  # 1x1 plate with horz clip
+    ("59426", "32209"),  # technic 5.5 axle
+    ("48729", "48729b"),  # bar with clip
+    ("48729a", "48729b"),
+    ("41005", "48729b"),
+    ("4459", "2780"),  # Technic friction pin
+    ("44302", "44302a"),  # 1x2 click hinge plate
 ]
 
 

@@ -75,6 +75,7 @@ SPECIAL_TOKENS = {
     "callout": ["!PY CALLOUT"],
     "bom": ["!LPUB INSERT BOM", "!PY BOM"],
     "no_callout": ["!PY NO_CALLOUT"],
+    "no_fullscale": ["!PY NO_FULLSCALE"],
     "no_rotate_icon": ["!PY NO_ROTATE_ICON"],
     "rotation_pre": ["!PY ROT %3 %4 %5"],
     "no_preview": ["!PY NO_PREVIEW"],

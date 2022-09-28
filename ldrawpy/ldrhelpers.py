@@ -65,11 +65,6 @@ def PUnits(point, units="ldu"):
         return "0 "
     return ns + " "
 
-    # # zs = ns.rstrip(".")
-    # if zs == "-0":
-    #     return "0 "
-    # return zs + " "
-
 
 def MatStr(m):
     """
@@ -253,3 +248,42 @@ def preset_aspect(current_aspect, aspect_change):
                 new_aspect = (-35, new_aspect[1], new_aspect[2])
 
     return norm_aspect(new_aspect)
+
+
+def clean_file(fn, fno=None, verbose=False):
+    """Cleans an LDraw file by changing all floating point numbers to
+    an optimum representation within the suggested precision of up to
+    4 decimal places.
+    """
+    if fno is None:
+        fno = fn.replace(".ldr", "_clean.ldr")
+    ns = []
+    bytes_in = 0
+    bytes_out = 0
+    with open(fn, "r") as f:
+        lines = f.readlines()
+        for line in lines:
+            bytes_in += len(line)
+            sl = line.split()
+            nl = []
+            for i, s in enumerate(sl):
+                xs = s
+                if i > 0 and "_" not in s:
+                    try:
+                        x = float(s)
+                        xs = PUnits(float(x)).rstrip()
+                    except ValueError:
+                        pass
+                nl.append(xs)
+                nl.append(" ")
+            nl = "".join(nl).rstrip()
+            bytes_out += len(nl)
+            ns.append(nl)
+    ns = "\n".join(ns)
+    with open(fno, "w") as f:
+        f.write(ns)
+    if verbose:
+        print(
+            "%s : %d bytes in / %d bytes out (%.1f%% saved)"
+            % (fn, bytes_in, bytes_out, ((bytes_in - bytes_out) / bytes_in * 100.0))
+        )

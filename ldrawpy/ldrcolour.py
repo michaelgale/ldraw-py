@@ -149,58 +149,8 @@ class LDRColour(object):
     def SafeLDRColourName(ldrCode):
         if ldrCode in LDR_COLOUR_NAME:
             return LDR_COLOUR_NAME[ldrCode]
-        elif ldrCode == LDR_ALL_COLOUR:
-            return "All Colours"
-        elif ldrCode == LDR_ANY_COLOUR:
-            return "Any Colour"
-        elif ldrCode == LDR_OTHER_COLOUR:
-            return "Other Colours"
-        elif ldrCode == LDR_MONO_COLOUR:
-            return "Monochrome"
-        elif ldrCode == LDR_BLUES_COLOUR:
-            return "Blues"
-        elif ldrCode == LDR_GREENS_COLOUR:
-            return "Greens"
-        elif ldrCode == LDR_YELLOWS_COLOUR:
-            return "Yellows"
-        elif ldrCode == LDR_PINKPURP_COLOUR:
-            return "Pinks/Purples"
-        elif ldrCode == LDR_BLKWHT_COLOUR:
-            return "Black/White"
-        elif ldrCode == LDR_GRAY_COLOUR:
-            return "Light/Dark Gray"
-        elif ldrCode == LDR_REDYLW_COLOUR:
-            return "Red/Yellow"
-        elif ldrCode == LDR_BLUYLW_COLOUR:
-            return "Blue/Yellow"
-        elif ldrCode == LDR_REDBLUYLW_COLOUR:
-            return "Red/Blue/Yellow"
-        elif ldrCode == LDR_GRNBRN_COLOUR:
-            return "Green/Brown"
-        elif ldrCode == LDR_BLUBRN_COLOUR:
-            return "Blue/Brown"
-        elif ldrCode == LDR_BRGREEN_COLOUR:
-            return "Bright Green/Ylwish Green"
-        elif ldrCode == LDR_LAVENDER_COLOUR:
-            return "Light/Med Lavender"
-        elif ldrCode == LDR_PINK_COLOUR:
-            return "Light/Med Pink"
-        elif ldrCode == LDR_LTYLW_COLOUR:
-            return "Br Light Yellow/Light Nougat"
-        elif ldrCode == LDR_BLUBLU_COLOUR:
-            return "Blue/Med Blue"
-        elif ldrCode == LDR_ORGYLW_COLOUR:
-            return "Orange/Yellow"
-        elif ldrCode == LDR_ORGBRN_COLOUR:
-            return "Orange/Brown"
-        elif ldrCode == LDR_REDORG_COLOUR:
-            return "Red/Orange"
-        elif ldrCode == LDR_REDORGYLW_COLOUR:
-            return "Red/Org/Ylw"
-        elif ldrCode == LDR_BLUGRN_COLOUR:
-            return "Blue/Green"
-        elif ldrCode == LDR_TAN_COLOUR:
-            return "Light/Dark Tan"
+        elif ldrCode in LDR_COLOUR_TITLE:
+            return LDR_COLOUR_TITLE[ldrCode]
         return ""
 
     @staticmethod
@@ -248,153 +198,15 @@ def FillColoursFromLDRCode(ldrCode):
     fillColours = []
     if ldrCode in LDR_COLOUR_RGB:
         fillColours.append(LDR_COLOUR_RGB[ldrCode])
-    elif ldrCode == LDR_ALL_COLOUR:
-        fillColours = LDR_ANY_COLOUR_FILL
-    elif ldrCode == LDR_ANY_COLOUR:
-        fillColours = LDR_ANY_COLOUR_FILL
-    elif ldrCode == LDR_OTHER_COLOUR:
-        fillColours = LDR_ANY_COLOUR_FILL
-    elif ldrCode == LDR_MONO_COLOUR:
-        fillColours = [
-            LDR_COLOUR_RGB[15],
-            LDR_COLOUR_RGB[151],
-            LDR_COLOUR_RGB[71],
-            LDR_COLOUR_RGB[72],
-        ]
-    elif ldrCode == LDR_BLUES_COLOUR:
-        fillColours = [
-            LDR_COLOUR_RGB[212],
-            LDR_COLOUR_RGB[73],
-            LDR_COLOUR_RGB[1],
-            LDR_COLOUR_RGB[272],
-        ]
-    elif ldrCode == LDR_GREENS_COLOUR:
-        fillColours = [
-            LDR_COLOUR_RGB[378],
-            LDR_COLOUR_RGB[10],
-            LDR_COLOUR_RGB[2],
-            LDR_COLOUR_RGB[288],
-        ]
-    elif ldrCode == LDR_YELLOWS_COLOUR:
-        fillColours = [
-            LDR_COLOUR_RGB[19],
-            LDR_COLOUR_RGB[226],
-            LDR_COLOUR_RGB[14],
-            LDR_COLOUR_RGB[191],
-        ]
-    elif ldrCode == LDR_PINKPURP_COLOUR:
-        fillColours = [
-            LDR_COLOUR_RGB[29],
-            LDR_COLOUR_RGB[13],
-            LDR_COLOUR_RGB[30],
-            LDR_COLOUR_RGB[26],
-        ]
-    elif ldrCode == LDR_BLKWHT_COLOUR:
-        fillColours = [LDR_COLOUR_RGB[0], LDR_COLOUR_RGB[15]]
-    elif ldrCode == LDR_GRAY_COLOUR:
-        fillColours = [LDR_COLOUR_RGB[71], LDR_COLOUR_RGB[72]]
-    elif ldrCode == LDR_REDYLW_COLOUR:
-        fillColours = [LDR_COLOUR_RGB[4], LDR_COLOUR_RGB[14]]
-    elif ldrCode == LDR_BLUYLW_COLOUR:
-        fillColours = [LDR_COLOUR_RGB[1], LDR_COLOUR_RGB[14]]
-    elif ldrCode == LDR_REDBLUYLW_COLOUR:
-        fillColours = [LDR_COLOUR_RGB[4], LDR_COLOUR_RGB[1], LDR_COLOUR_RGB[14]]
-    elif ldrCode == LDR_GRNBRN_COLOUR:
-        fillColours = [LDR_COLOUR_RGB[2], LDR_COLOUR_RGB[70]]
-    elif ldrCode == LDR_BLUBRN_COLOUR:
-        fillColours = [LDR_COLOUR_RGB[1], LDR_COLOUR_RGB[70]]
-    elif ldrCode == LDR_BLUBLU_COLOUR:
-        fillColours = [LDR_COLOUR_RGB[1], LDR_COLOUR_RGB[73]]
-    elif ldrCode == LDR_DKREDBLU_COLOUR:
-        fillColours = [LDR_COLOUR_RGB[272], LDR_COLOUR_RGB[320]]
-
-    elif ldrCode == LDR_BRGREEN_COLOUR:
-        fillColours = [LDR_COLOUR_RGB[10], LDR_COLOUR_RGB[326]]
-    elif ldrCode == LDR_LAVENDER_COLOUR:
-        fillColours = [LDR_COLOUR_RGB[30], LDR_COLOUR_RGB[31]]
-    elif ldrCode == LDR_PINK_COLOUR:
-        fillColours = [LDR_COLOUR_RGB[13], LDR_COLOUR_RGB[29]]
-    elif ldrCode == LDR_LTYLW_COLOUR:
-        fillColours = [LDR_COLOUR_RGB[226], LDR_COLOUR_RGB[78]]
-    elif ldrCode == LDR_ORGYLW_COLOUR:
-        fillColours = [LDR_COLOUR_RGB[25], LDR_COLOUR_RGB[14]]
-    elif ldrCode == LDR_ORGBRN_COLOUR:
-        fillColours = [LDR_COLOUR_RGB[25], LDR_COLOUR_RGB[6]]
-    elif ldrCode == LDR_REDORG_COLOUR:
-        fillColours = [LDR_COLOUR_RGB[4], LDR_COLOUR_RGB[25]]
-    elif ldrCode == LDR_TANBRN_COLOUR:
-        fillColours = [LDR_COLOUR_RGB[19], LDR_COLOUR_RGB[6]]
-    elif ldrCode == LDR_REDORGYLW_COLOUR:
-        fillColours = [LDR_COLOUR_RGB[4], LDR_COLOUR_RGB[25], LDR_COLOUR_RGB[14]]
-    elif ldrCode == LDR_BLUGRN_COLOUR:
-        fillColours = [LDR_COLOUR_RGB[73], LDR_COLOUR_RGB[10]]
-    elif ldrCode == LDR_TAN_COLOUR:
-        fillColours = [LDR_COLOUR_RGB[19], LDR_COLOUR_RGB[28]]
-    fillTriples = []
-    for colour in fillColours:
-        fillTriples.append(LDRColour.RGBFromHex(colour))
-    return fillTriples
+    elif ldrCode in LDR_FILL_CODES:
+        fillColours = LDR_FILL_CODES[ldrCode]
+    return [LDRColour.RGBFromHex(x) for x in fillColours]
 
 
 def FillTitlesFromLDRCode(ldrCode):
     fillTitles = []
     if ldrCode in LDR_COLOUR_RGB:
         fillTitles.append(LDR_COLOUR_NAME[ldrCode])
-    elif ldrCode == LDR_ALL_COLOUR:
-        fillTitles = ["All Colours"]
-    elif ldrCode == LDR_ANY_COLOUR:
-        fillTitles = ["Any Colour"]
-    elif ldrCode == LDR_OTHER_COLOUR:
-        fillTitles = ["Other Colours"]
-    elif ldrCode == LDR_MONO_COLOUR:
-        fillTitles = ["Monochrome"]
-    elif ldrCode == LDR_BLUES_COLOUR:
-        fillTitles = ["Blues"]
-    elif ldrCode == LDR_GREENS_COLOUR:
-        fillTitles = ["Greens"]
-    elif ldrCode == LDR_YELLOWS_COLOUR:
-        fillTitles = ["Yellows"]
-    elif ldrCode == LDR_PINKPURP_COLOUR:
-        fillTitles = ["Pinks/Purples"]
-    elif ldrCode == LDR_BLKWHT_COLOUR:
-        fillTitles = [LDR_COLOUR_NAME[0], LDR_COLOUR_NAME[15]]
-    elif ldrCode == LDR_GRAY_COLOUR:
-        fillTitles = [LDR_COLOUR_NAME[71], LDR_COLOUR_NAME[72]]
-    elif ldrCode == LDR_REDYLW_COLOUR:
-        fillTitles = [LDR_COLOUR_NAME[4], LDR_COLOUR_NAME[14]]
-    elif ldrCode == LDR_BLUYLW_COLOUR:
-        fillTitles = [LDR_COLOUR_NAME[1], LDR_COLOUR_NAME[14]]
-    elif ldrCode == LDR_REDBLUYLW_COLOUR:
-        fillTitles = [LDR_COLOUR_NAME[4], LDR_COLOUR_NAME[1], LDR_COLOUR_NAME[14]]
-    elif ldrCode == LDR_GRNBRN_COLOUR:
-        fillTitles = [LDR_COLOUR_NAME[2], LDR_COLOUR_NAME[70]]
-    elif ldrCode == LDR_BLUBRN_COLOUR:
-        fillTitles = [LDR_COLOUR_NAME[1], LDR_COLOUR_NAME[70]]
-    elif ldrCode == LDR_BLUBLU_COLOUR:
-        fillTitles = [LDR_COLOUR_NAME[1], LDR_COLOUR_NAME[73]]
-    elif ldrCode == LDR_DKREDBLU_COLOUR:
-        fillTitles = [LDR_COLOUR_NAME[272], LDR_COLOUR_NAME[320]]
-
-    elif ldrCode == LDR_BRGREEN_COLOUR:
-        fillTitles = [LDR_COLOUR_NAME[10], LDR_COLOUR_NAME[326]]
-    elif ldrCode == LDR_LAVENDER_COLOUR:
-        fillTitles = [LDR_COLOUR_NAME[30], LDR_COLOUR_NAME[31]]
-    elif ldrCode == LDR_PINK_COLOUR:
-        fillTitles = [LDR_COLOUR_NAME[13], LDR_COLOUR_NAME[29]]
-    elif ldrCode == LDR_LTYLW_COLOUR:
-        fillTitles = [LDR_COLOUR_NAME[226], LDR_COLOUR_NAME[78]]
-    elif ldrCode == LDR_ORGYLW_COLOUR:
-        fillTitles = [LDR_COLOUR_NAME[25], LDR_COLOUR_NAME[14]]
-    elif ldrCode == LDR_ORGBRN_COLOUR:
-        fillTitles = [LDR_COLOUR_NAME[25], LDR_COLOUR_NAME[6]]
-    elif ldrCode == LDR_REDORG_COLOUR:
-        fillTitles = [LDR_COLOUR_NAME[4], LDR_COLOUR_NAME[25]]
-    elif ldrCode == LDR_TANBRN_COLOUR:
-        fillTitles = [LDR_COLOUR_NAME[19], LDR_COLOUR_NAME[6]]
-    elif ldrCode == LDR_REDORGYLW_COLOUR:
-        fillTitles = [LDR_COLOUR_NAME[4], LDR_COLOUR_NAME[25], LDR_COLOUR_NAME[14]]
-    elif ldrCode == LDR_BLUGRN_COLOUR:
-        fillTitles = [LDR_COLOUR_NAME[1], LDR_COLOUR_NAME[2]]
-    elif ldrCode == LDR_TAN_COLOUR:
-        fillTitles = [LDR_COLOUR_NAME[19], LDR_COLOUR_NAME[28]]
+    elif ldrCode in LDR_FILL_TITLES:
+        fillTitles = LDR_FILL_TITLES[ldrCode]
     return fillTitles

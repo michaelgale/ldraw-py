@@ -103,6 +103,7 @@ def BrickNameStrip(s, level=0):
         sn = sn.replace("1 and 1/3", "1-1/3")
         sn = sn.replace("1 & 1/3", "1-1/3")
         sn = sn.replace("with Headlight", "Erling")
+        sn = sn.replace("Angle Connector", "Conn")
     elif level == 1:
         sn = sn.replace("with ", "w/")
         sn = sn.replace("With ", "w/")
@@ -123,6 +124,7 @@ def BrickNameStrip(s, level=0):
         sn = sn.replace("Medium", "Med")
         sn = sn.replace("Offset", "offs")
         sn = sn.replace("Adjacent", "adj")
+        sn = sn.replace("degree", "°")
     elif level == 2:
         sn = sn.replace("Trans", "Tr")
         sn = sn.replace(" x ", "x")

@@ -85,7 +85,7 @@ class ArrowContext:
             return "hashl4"
         if length <= 5:
             return "hashl5"
-        return "hashl2"
+        return "hashl5"
 
     def matrix_for_offset(self, offset, mask="", invert=False, tilt=0):
         rotxy = norm_angle(self.rotstep.x + self.rotstep.y)

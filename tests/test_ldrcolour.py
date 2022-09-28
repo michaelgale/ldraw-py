@@ -5,6 +5,7 @@ import sys
 import pytest
 
 from ldrawpy import *
+from ldrawpy.ldrcolour import FillColoursFromLDRCode, FillTitlesFromLDRCode
 
 
 def test_init_colour():
@@ -25,3 +26,15 @@ def test_equality():
     assert c1 == c2
     c3 = LDRColour([102, 51, 153])
     assert c2 == c3
+
+def test_dict_lookup():
+    c1 = LDRColour(LDR_ORGYLW_COLOUR)
+    assert c1.name() == "Orange/Yellow"
+    c2 = LDRColour.SafeLDRColourName(LDR_ORGYLW_COLOUR)
+    assert c2 == "Orange/Yellow"
+    c3 = FillColoursFromLDRCode(LDR_BLKWHT_COLOUR)
+    assert (1.0, 1.0, 1.0) in c3
+    c4 = FillTitlesFromLDRCode(LDR_BLKWHT_COLOUR)
+    assert "Black" in c4
+    assert "White" in c4
+    assert len(c4) == 2

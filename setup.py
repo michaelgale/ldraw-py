@@ -61,5 +61,6 @@ setuptools.setup(
     ],
     install_requires=[
         "pillow",
+        "pytest",
     ],
 )

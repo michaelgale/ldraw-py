@@ -55,9 +55,8 @@ def PUnits(point, units="ldu"):
     else:
         x = point
     xs = "%.5f" % (x)
-    ns = str(decimal.Decimal(xs.strip()).quantize(decimal.Decimal(10) ** -4))
-    estr = "0E-4"
-    ns = ns.replace(estr, "0.")
+    ns = str(quantize(xs))
+    ns = ns.replace("0E-4", "0.")
     if "E" not in ns:
         ns = ns.rstrip("0")
     ns = ns.rstrip(".")

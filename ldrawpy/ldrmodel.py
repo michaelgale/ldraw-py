@@ -23,12 +23,9 @@
 #
 # LDraw model classes and helper functions
 
-import os, tempfile
-import datetime
 import hashlib
 
 import crayons
-from datetime import datetime
 from collections import defaultdict
 
 from toolbox import *
@@ -235,20 +232,6 @@ def recursive_parse_model(
                     parts.append(part)
 
 
-def _coord_str(x, y=None, sep=", "):
-    if isinstance(x, (tuple, list)):
-        a, b = float(x[0]), float(x[1])
-    else:
-        a, b = float(x), float(y)
-    sa = ("%f" % (a)).rstrip("0").rstrip(".")
-    sb = ("%f" % (b)).rstrip("0").rstrip(".")
-    s = []
-    s.append(str(crayons.yellow("%s" % (sa))))
-    s.append(sep)
-    s.append(str(crayons.yellow("%s" % (sb))))
-    return "".join(s)
-
-
 def unique_set(items):
     udict = {}
     if len(items) > 0:
@@ -272,9 +255,7 @@ def key_colour(elem):
 
 def get_sha1_hash(parts):
     """Gets a normalized sha1 hash LDRPart objects"""
-    sp = []
-    for p in parts:
-        sp.append((p, p.sha1hash()))
+    sp = [(p, p.sha1hash()) for p in parts]
     sp.sort(key=lambda x: x[1])
     shash = hashlib.sha1()
     for p in sp:
@@ -284,15 +265,11 @@ def get_sha1_hash(parts):
 
 def sort_parts(parts, key="name", order="ascending"):
     """Sorts a list of LDRPart objects by key"""
-    sp = []
     if key.lower() == "sha1":
-        for p in parts:
-            sp.append((p, p.sha1hash()))
+        sp = [(p, p.sha1hash()) for p in parts]
         sp.sort(key=lambda x: x[1])
-        xp = []
-        for p in sp:
-            xp.append(sp[0])
-        return xp
+        return [p[0] for p in sp]
+    sp = [p for p in parts]
     if key.lower() == "name":
         sp.sort(key=key_name, reverse=True if order.lower() == "descending" else False)
     elif key.lower() == "colour":

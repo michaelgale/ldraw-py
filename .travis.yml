@@ -1,7 +1,7 @@
 language: python
 
 python:
-  - "3.6"
+  - "3.7"
 
 before_script:
     - wget https://github.com/michaelgale/toolbox-py/archive/master.zip -O /tmp/toolbox.zip

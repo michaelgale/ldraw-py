@@ -46,7 +46,7 @@ An example of the package can be seen below
 
 ## Requirements
 
-* Python 3.6+
+* Python 3.7+
 * toolbox-py
 
 ## References

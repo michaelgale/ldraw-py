@@ -40,13 +40,6 @@ ARROW_PLI_SUFFIX = """0 !LPUB PLI END"""
 
 ARROW_PARTS = ["hashl2", "hashl3", "hashl4", "hashl5", "hashl6"]
 
-# ARROW_MZ = Matrix([[0, -1.25, 0], [1.25, 0, 0], [0, 0, 1.25]])
-# ARROW_PZ = Matrix([[0, -1.25, 0], [-1.25, 0, 0], [0, 0, -1.25]])
-# ARROW_MX = Matrix([[0, 0, 1.25], [1.25, 0, 0], [0, 1.25, 0]])
-# ARROW_PX = Matrix([[0, 0, -1.25], [-1.25, 0, 0], [0, 1.25, 0]])
-# ARROW_MY = Matrix([[0, -1.25, 0], [0, 0, -1.25], [1.25, 0, 0]])
-# ARROW_PY = Matrix([[0, -1.25, 0], [0, 0, 1.25], [-1.25, 0, 0]])
-
 ARROW_MZ = Matrix([[0, -1, 0], [1, 0, 0], [0, 0, 1]])
 ARROW_PZ = Matrix([[0, -1, 0], [-1, 0, 0], [0, 0, -1]])
 ARROW_MX = Matrix([[0, 0, 1], [1, 0, 0], [0, 1, 0]])
@@ -55,15 +48,28 @@ ARROW_MY = Matrix([[0, -1, 0], [0, 0, -1], [1, 0, 0]])
 ARROW_PY = Matrix([[0, -1, 0], [0, 0, 1], [-1, 0, 0]])
 
 
-def value_after_token(tokens, value_token):
+def value_after_token(tokens, value_token, x, xtype=int):
     for i, token in enumerate(tokens):
         if token == value_token:
             if (i + 1) < len(tokens):
-                return tokens[i + 1]
+                try:
+                    v = xtype(tokens[i + 1])
+                    return v
+                except:
+                    return x
+    return x
 
 
 def norm_angle(angle):
     return angle % 45
+
+
+def vectorize(s):
+    try:
+        v = Vector(*(float(x) for x in s))
+    except:
+        return None
+    return v
 
 
 class ArrowContext:
@@ -114,7 +120,6 @@ class ArrowContext:
 
     def loc_for_offset(self, offset, length, mask="", ratio=0.5):
         loc_offset = Vector(0, 0, 0)
-        ratio1 = 1.0 + ratio
         if (offset.x > 0) and "x" not in mask:
             loc_offset.x = offset.x / 2 - float(length) * ratio * self.scale
         elif (offset.x < 0) and "x" not in mask:
@@ -133,17 +138,6 @@ class ArrowContext:
             loc_offset += Vector(0, offset.y, 0)
         if "z" in mask:
             loc_offset += Vector(0, 0, offset.z)
-        # else:
-        #     loc_offset += ratio * offset
-        # if "x" in mask:
-        #     loc_offset += Vector(offset.x, ratio * offset.y, ratio * offset.z)
-        # elif "y" in mask:
-        #     loc_offset += Vector(ratio * offset.x, offset.y, ratio * offset.z)
-        # elif "z" in mask:
-        #     loc_offset += Vector(ratio * offset.x, ratio * offset.y, offset.z)
-        # else:
-        #     loc_offset += ratio * offset
-        # print("len: %s offset: %s  mask: %s ratio: %.1f loc_off: %s" %(length, str(offset), mask, ratio, str(loc_offset)))
         return loc_offset
 
     def part_loc_for_offset(self, offset, mask=""):
@@ -225,71 +219,28 @@ def arrows_for_step(arrow_ctx, step, as_lpub=True, only_arrows=False, as_dict=Fa
                 if in_arrow == False and "BEGIN" in line:
                     in_arrow = True
                     arrow_ctx.offset = []
-                    idx = 0
-                    try:
-                        arrow_ctx.offset.append(
-                            Vector(
-                                float(ls[4 + idx]),
-                                float(ls[5 + idx]),
-                                float(ls[6 + idx]),
-                            )
-                        )
-                    except:
-                        pass
-                    if len(ls) > 7 + idx:
-                        try:
-                            arrow_ctx.offset.append(
-                                Vector(
-                                    float(ls[7 + idx]),
-                                    float(ls[8 + idx]),
-                                    float(ls[9 + idx]),
-                                )
-                            )
-                        except:
-                            pass
-                    if len(ls) > 10 + idx:
-                        try:
-                            arrow_ctx.offset.append(
-                                Vector(
-                                    float(ls[10 + idx]),
-                                    float(ls[11 + idx]),
-                                    float(ls[12 + idx]),
-                                )
-                            )
-                        except:
-                            pass
+                    nv = int((len(ls) - 4) / 3)
+                    for _, i in enumerate(range(nv)):
+                        v = vectorize(ls[4 + (i * 3) : 7 + (i * 3)])
+                        if v is not None:
+                            arrow_ctx.offset.append(v)
                 elif in_arrow and "END" in line:
                     in_arrow = False
                     continue
-                if "COLOUR" in line:
-                    try:
-                        arrow_colour = int(value_after_token(ls, "COLOUR"))
-                    except:
-                        pass
-                    if not in_arrow:
-                        arrow_ctx.colour = arrow_colour
-                        continue
-                if "LENGTH" in line:
-                    try:
-                        arrow_ctx.length = int(value_after_token(ls, "LENGTH"))
-                    except:
-                        pass
-                    if not in_arrow:
-                        continue
-                if "RATIO" in line:
-                    try:
-                        arrow_ratio = float(value_after_token(ls, "RATIO"))
-                    except:
-                        pass
-                    if not in_arrow:
-                        continue
-                if "TILT" in line:
-                    try:
-                        arrow_tilt = float(value_after_token(ls, "TILT"))
-                    except:
-                        pass
-                    if not in_arrow:
-                        continue
+                arrow_colour = value_after_token(ls, "COLOUR", arrow_colour, int)
+                if not in_arrow:
+                    arrow_ctx.colour = arrow_colour
+                arrow_ctx.length = value_after_token(
+                    ls, "LENGTH", arrow_ctx.length, int
+                )
+                arrow_ratio = value_after_token(ls, "RATIO", arrow_ratio, float)
+                arrow_tilt = value_after_token(ls, "TILT", arrow_tilt, float)
+
+                if (
+                    any(x in line for x in ["COLOUR", "LENGTH", "RATIO", "TILT"])
+                    and not in_arrow
+                ):
+                    continue
 
         if in_arrow and lineType == 1:
             item = arrow_ctx.dict_for_line(
@@ -368,10 +319,7 @@ def arrows_for_lpub_file(filename, outfile):
         with open(outfile, "w") as fpo:
             files = fp.read().split("0 FILE")
             for i, file in enumerate(files):
-                if i == 0:
-                    mfile = file
-                else:
-                    mfile = "0 FILE " + file.strip()
+                mfile = file if i == 0 else "0 FILE " + file.strip()
                 steps = mfile.split("0 STEP")
                 for j, step in enumerate(steps):
                     new_step = arrows_for_step(arrow_ctx, step)
@@ -386,14 +334,12 @@ def remove_offset_parts(parts, oparts, arrow_dict, as_str=False):
     op = ldrlist_from_parts(oparts)
     offsets = []
     arrows = []
-    # aparts = []
     for ad in arrow_dict:
         p = LDRPart().from_str(ad["part"])
         offset = ad["offset"] * p.attrib.matrix
         offsets.append(offset)
         a = LDRPart().from_str(ad["arrow"])
         arrows.append(a.name)
-        # aparts.append(a)
     np = []
     for p in pp:
         matched = False

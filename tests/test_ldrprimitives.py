@@ -78,3 +78,17 @@ def test_ldrpart_equality():
     p2.move_to((0, 8, 20))
     assert p1 == p2
     assert not p1.is_identical(p2)
+
+
+def test_ldrpart_sort():
+    p1 = LDRPart(0, name="3001")
+    p2 = LDRPart(1, name="3666")
+    p3 = LDRPart(14, name="3070b")
+    sp = sort_parts([p1, p2, p3], key="sha1")
+    assert sp[0].name == "3070b"
+    assert sp[1].name == "3001"
+    assert sp[2].name == "3666"
+    sp = sort_parts([p1, p2, p3], key="name", order="descending")
+    assert sp[2].name == "3001"
+    assert sp[1].name == "3070b"
+    assert sp[0].name == "3666"

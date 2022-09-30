@@ -2,7 +2,6 @@
 
 *.pdf
 *.png
-*.ldr
 # C extensions
 *.so
 .vscode

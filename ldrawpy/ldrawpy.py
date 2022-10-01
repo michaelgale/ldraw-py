@@ -76,7 +76,7 @@ def mesh_to_ldr(
     return "".join(s)
 
 
-def BrickNameStrip(s, level=0):
+def brick_name_strip(s, level=0):
     """Progressively strips (with increasing levels) a part description
     by making substitutions with abreviations, removing spaces, etc.
     This can be useful for labelling or BOM part lists where space is limited."""

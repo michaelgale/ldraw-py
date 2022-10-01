@@ -27,6 +27,7 @@ def test_equality():
     c3 = LDRColour([102, 51, 153])
     assert c2 == c3
 
+
 def test_dict_lookup():
     c1 = LDRColour(LDR_ORGYLW_COLOUR)
     assert c1.name() == "Orange/Yellow"

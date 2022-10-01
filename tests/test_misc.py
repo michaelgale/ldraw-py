@@ -9,6 +9,7 @@ from ldrawpy import *
 
 fin = "./test_files/testfile2.ldr"
 
+
 def test_cleanup():
     fno = fin.replace(".ldr", "_clean.ldr")
     clean_file(fin, fno)
@@ -20,4 +21,3 @@ def test_cleanup():
         fl = f.read()
         assert len(fl) == 1101
         assert "-60" in fl
-    

@@ -256,27 +256,3 @@ class LDViewRender:
             _, fn = split_path(filename)
             fn = colour_path_str(fn)
             self._logoutput("> smoothed %s (%s)" % (fn, _coord_str(im.size)), tstart)
-
-
-def GeneratePartImage(name, colour=LDR_DEF_COLOUR, size=512, outpath="./", filename=""):
-
-    p = LDRPart(colour, "mm")
-    p.name = name
-    LDR_TEMP_PATH = tempfile.gettempdir() + os.sep + "temp.ldr"
-    f = open(LDR_TEMP_PATH, "w")
-    f.write(str(p))
-    f.close()
-
-    if filename is not None:
-        fn = filename
-    else:
-        fn = outpath + name + "_" + str(colour) + ".png"
-
-    ldvsize = "-SaveWidth=%d -SaveHeight=%d -SaveSnapShot=%s" % (size, size, fn)
-    ldv = []
-    ldv.append(LDVIEW_BIN)
-    ldv.append(LDVIEW_ARG)
-    ldv.append(ldvsize)
-    ldv.append(LDR_TEMP_PATH)
-    s = " ".join(ldv)
-    os.system(s)

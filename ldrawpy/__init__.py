@@ -12,7 +12,7 @@ VERSION = __project__ + "-" + __version__
 script_dir = os.path.dirname(__file__)
 
 from .constants import *
-from .ldrawpy import BrickNameStrip, xyz_to_ldr, mesh_to_ldr
+from .ldrawpy import brick_name_strip, xyz_to_ldr, mesh_to_ldr
 from .ldrcolourdict import *
 from .ldrhelpers import *
 from .ldrcolour import LDRColour

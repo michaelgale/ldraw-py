@@ -138,6 +138,8 @@ BL_TO_LDR_COLOUR = {
     65: 82,
     89: 85,
     46: 21,
+    353: 220,
+    368: 236,
 }
 
 LDR_COLOUR_NAME = {
@@ -212,6 +214,7 @@ LDR_COLOUR_NAME = {
     330: "Olive Green",
     335: "Sand Red",
     351: "Medium Dark Pink",
+    353: "Coral",
     366: "Earth Orange",
     373: "Sand Purple",
     378: "Sand Green",
@@ -273,6 +276,7 @@ LDR_COLOUR_NAME = {
     300: "Metallic Copper",
     184: "Metallic Bright Red",
     186: "Metallic Dark Green",
+    368: "Neon Yellow",
 }
 
 LDR_COLOUR_RGB = {
@@ -347,6 +351,7 @@ LDR_COLOUR_RGB = {
     330: "9b9a5a",  #'Olive Green',
     335: "d67572",  #'Sand Red',
     351: "f785b1",  #'Medium Dark Pink',
+    353: "FF6D77",  # Coral
     366: "fa9c1c",  #'Earth Orange',
     373: "845e84",  #'Sand Purple',
     378: "a0bcac",  #'Sand Green',
@@ -408,6 +413,7 @@ LDR_COLOUR_RGB = {
     300: "c27f53",  #'Metallic Copper',
     184: "d60026",  #'Metallic Bright Red',
     186: "008e3c",  #'Metallic Dark Green'
+    368: "EBD800",  # Neon Yellow
 }
 
 LDR_COLOUR_TITLE = {

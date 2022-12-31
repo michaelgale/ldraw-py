@@ -8,7 +8,7 @@ import sys
 import setuptools
 
 PACKAGE_NAME = "ldrawpy"
-MINIMUM_PYTHON_VERSION = "3.6"
+MINIMUM_PYTHON_VERSION = "3.7"
 
 
 def check_python_version():

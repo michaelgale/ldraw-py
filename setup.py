@@ -62,6 +62,7 @@ setuptools.setup(
     install_requires=[
         "pillow",
         "pytest",
+        "rich",
     ],
     entry_points={
         "console_scripts": [

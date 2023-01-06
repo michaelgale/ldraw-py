@@ -63,4 +63,9 @@ setuptools.setup(
         "pillow",
         "pytest",
     ],
+    entry_points={
+        "console_scripts": [
+            "ldrcat=ldrawpy.scripts.ldrcat:main",
+        ]
+    }
 )

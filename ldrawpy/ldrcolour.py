@@ -42,15 +42,9 @@ class LDRColour(object):
         self.b = 0.8
         if isinstance(colour, (tuple, list)):
             if (colour[0] > 1.0) or (colour[1] > 1.0) or (colour[2] > 1.0):
-                self.r = colour[0] / 255.0
-                self.g = colour[1] / 255.0
-                self.b = colour[2] / 255.0
-                if self.r > 1.0:
-                    self.r = 1.0
-                if self.g > 1.0:
-                    self.g = 1.0
-                if self.b > 1.0:
-                    self.b = 1.0
+                self.r = min(colour[0] / 255.0, 1.0)
+                self.g = min(colour[1] / 255.0, 1.0)
+                self.b = min(colour[2] / 255.0, 1.0)
             else:
                 self.r = colour[0]
                 self.g = colour[1]

@@ -31,7 +31,7 @@ from functools import reduce
 
 from toolbox import *
 from ldrawpy import *
-from .ldrhelpers import VectorStr, MatStr, quantize
+from .ldrhelpers import vector_str, mat_str, quantize
 
 
 class LDRAttrib:
@@ -44,7 +44,9 @@ class LDRAttrib:
         self.matrix = Identity()
 
     def __eq__(self, other):
-        if self.colour != other.colour:
+        if not isinstance(other, self.__class__):
+            return False
+        if not self.colour == other.colour:
             return False
         if not self.loc.almost_same_as(other.loc):
             return False
@@ -72,8 +74,8 @@ class LDRLine:
     def __str__(self):
         return (
             ("2 %d " % self.attrib.colour)
-            + VectorStr(self.p1, self.attrib)
-            + VectorStr(self.p2, self.attrib)
+            + vector_str(self.p1, self.attrib)
+            + vector_str(self.p2, self.attrib)
             + "\n"
         )
 
@@ -98,9 +100,9 @@ class LDRTriangle:
     def __str__(self):
         return (
             ("3 %d " % self.attrib.colour)
-            + VectorStr(self.p1, self.attrib)
-            + VectorStr(self.p2, self.attrib)
-            + VectorStr(self.p3, self.attrib)
+            + vector_str(self.p1, self.attrib)
+            + vector_str(self.p2, self.attrib)
+            + vector_str(self.p3, self.attrib)
             + "\n"
         )
 
@@ -128,10 +130,10 @@ class LDRQuad:
     def __str__(self):
         return (
             ("4 %d " % self.attrib.colour)
-            + VectorStr(self.p1, self.attrib)
-            + VectorStr(self.p2, self.attrib)
-            + VectorStr(self.p3, self.attrib)
-            + VectorStr(self.p4, self.attrib)
+            + vector_str(self.p1, self.attrib)
+            + vector_str(self.p2, self.attrib)
+            + vector_str(self.p3, self.attrib)
+            + vector_str(self.p4, self.attrib)
             + "\n"
         )
 
@@ -160,17 +162,16 @@ class LDRPart:
         tup = tuple(reduce(lambda row1, row2: row1 + row2, self.attrib.matrix.rows))
         name = self.name
         ext = name[-4:].lower()
+        name = self.name
         if len(name) > 4:
-            if ext == ".ldr" or ext == ".dat":
-                name = self.name
-            else:
-                name = self.name + ".dat"
+            if not (ext == ".ldr" or ext == ".dat"):
+                name += ".dat"
         else:
-            name = self.name + ".dat"
+            name += ".dat"
         s = (
             ("1 %i " % self.attrib.colour)
-            + VectorStr(self.attrib.loc, self.attrib)
-            + MatStr(tup)
+            + vector_str(self.attrib.loc, self.attrib)
+            + mat_str(tup)
             + ("%s\n" % name)
         )
         if self.wrapcallout and ext == ".ldr":
@@ -178,6 +179,8 @@ class LDRPart:
         return s
 
     def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return False
         if self.name != other.name:
             return False
         if self.attrib.colour != other.attrib.colour:
@@ -253,37 +256,38 @@ class LDRPart:
         self.attrib.loc += offset
 
     def from_str(self, s):
-        splitLine = s.lower().split()
-        if len(splitLine) >= 15:
-            line_type = int(splitLine[0].lstrip())
-            if line_type == 1:
-                self.attrib.colour = int(splitLine[1])
-                self.attrib.loc.x = quantize(splitLine[2])
-                self.attrib.loc.y = quantize(splitLine[3])
-                self.attrib.loc.z = quantize(splitLine[4])
-                self.attrib.matrix = Matrix(
-                    [
-                        [
-                            quantize(splitLine[5]),
-                            quantize(splitLine[6]),
-                            quantize(splitLine[7]),
-                        ],
-                        [
-                            quantize(splitLine[8]),
-                            quantize(splitLine[9]),
-                            quantize(splitLine[10]),
-                        ],
-                        [
-                            quantize(splitLine[11]),
-                            quantize(splitLine[12]),
-                            quantize(splitLine[13]),
-                        ],
-                    ]
-                )
-                pname = " ".join(splitLine[14:])
-                self.name = pname.replace(".dat", "")
-                return self
-        return None
+        split_line = s.lower().split()
+        if not len(split_line) >= 15:
+            return None
+        line_type = int(split_line[0].lstrip())
+        if not line_type == 1:
+            return None
+        self.attrib.colour = int(split_line[1])
+        self.attrib.loc.x = quantize(split_line[2])
+        self.attrib.loc.y = quantize(split_line[3])
+        self.attrib.loc.z = quantize(split_line[4])
+        self.attrib.matrix = Matrix(
+            [
+                [
+                    quantize(split_line[5]),
+                    quantize(split_line[6]),
+                    quantize(split_line[7]),
+                ],
+                [
+                    quantize(split_line[8]),
+                    quantize(split_line[9]),
+                    quantize(split_line[10]),
+                ],
+                [
+                    quantize(split_line[11]),
+                    quantize(split_line[12]),
+                    quantize(split_line[13]),
+                ],
+            ]
+        )
+        pname = " ".join(split_line[14:])
+        self.name = pname.replace(".dat", "")
+        return self
 
     @staticmethod
     def translate_from_str(s, offset):

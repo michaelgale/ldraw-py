@@ -60,6 +60,40 @@ LDR_PINKPURP_COLOUR = 1027
 
 LDR_ANY_COLOUR_FILL = ["E6E6E6", "8EDAFF", "FFFF66", "FD908F"]
 
+LDRAW_TOKENS = [
+    "STEP",
+    "FILE",
+    "NOFILE",
+    "WRITE",
+    "PRINT",
+    "CLEAR",
+    "PAUSE",
+    "SAVE",
+    "BFC",
+]
+META_TOKENS = [
+    "ROTSTEP",
+    "BACKGROUND",
+    "GHOST",
+    "GROUP",
+    "MLCAD",
+    "ROTATION",
+    "SYNTH",
+    "L3P",
+    "COLOR",
+    "COLOUR",
+    "TRANSLATE",
+    "ROTATE",
+    "SCALE",
+    "TRANSFORM",
+    "COLOURNAME",
+    "COLORNAME",
+    "POINT",
+    "MATRIX",
+    "CMDLINE",
+    "BEGIN",
+    "END",
+]
 
 SPECIAL_TOKENS = {
     "scale": ["!LPUB ASSEM MODEL_SCALE %-1", "!PY SCALE %-1"],

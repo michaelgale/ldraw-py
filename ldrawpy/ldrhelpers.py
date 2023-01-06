@@ -35,15 +35,15 @@ def quantize(x):
     return float(v)
 
 
-def mm2LDU(x):
+def MM2LDU(x):
     return x * 2.5
 
 
-def LDU2mm(x):
+def LDU2MM(x):
     return x * 0.4
 
 
-def PUnits(point, units="ldu"):
+def val_units(value, units="ldu"):
     """
     Writes a floating point value in units of either mm or ldu.
     It restricts the number of decimal places to 4 and minimizes
@@ -51,9 +51,9 @@ def PUnits(point, units="ldu"):
     """
     x = 0.0
     if units == "mm":
-        x = point * 2.5
+        x = value * 2.5
     else:
-        x = point
+        x = value
     xs = "%.5f" % (x)
     ns = str(quantize(xs))
     ns = ns.replace("0E-4", "0.")
@@ -65,25 +65,25 @@ def PUnits(point, units="ldu"):
     return ns + " "
 
 
-def MatStr(m):
+def mat_str(m):
     """
     Writes the values of a matrix formatted by PUnits.
     """
     s = []
     for v in m:
-        s.append(PUnits(v, "ldu"))
+        s.append(val_units(v, "ldu"))
     return "".join(s)
 
 
-def VectorStr(p, attrib):
+def vector_str(p, attrib):
     return (
-        PUnits(p.x, attrib.units)
-        + PUnits(p.y, attrib.units)
-        + PUnits(p.z, attrib.units)
+        val_units(p.x, attrib.units)
+        + val_units(p.y, attrib.units)
+        + val_units(p.z, attrib.units)
     )
 
 
-def GetCircleSegments(radius, segments, attrib):
+def get_circle_segments(radius, segments, attrib):
     from .ldrprimitives import LDRLine
 
     lines = []
@@ -179,19 +179,6 @@ def remove_parts_from_list(parts, other, as_str=False):
     return np
 
 
-def pprint_line(line):
-    from rich import print
-
-    ls = line.split()
-    if ls[0] == "1":
-        print(
-            "[white]%s [blue]%3s [green]%9s %9s %9s [cyan]%7s %7s %7s [yellow]%7s %7s %7s [cyan]%7s %7s %7s [red]%s"
-            % tuple([x for x in ls])
-        )
-    else:
-        print("[white]%s" % (line.rstrip()))
-
-
 def norm_angle(a):
     """Normalizes an angle in degrees to -180 ~ +180 deg."""
     a = a % 360
@@ -249,7 +236,7 @@ def preset_aspect(current_aspect, aspect_change):
     return norm_aspect(new_aspect)
 
 
-def clean_file(fn, fno=None, verbose=False):
+def clean_file(fn, fno=None, verbose=False, as_str=False):
     """Cleans an LDraw file by changing all floating point numbers to
     an optimum representation within the suggested precision of up to
     4 decimal places.
@@ -270,7 +257,7 @@ def clean_file(fn, fno=None, verbose=False):
                 if i > 0 and "_" not in s:
                     try:
                         x = float(s)
-                        xs = PUnits(float(x)).rstrip()
+                        xs = val_units(float(x)).rstrip()
                     except ValueError:
                         pass
                 nl.append(xs)
@@ -278,11 +265,13 @@ def clean_file(fn, fno=None, verbose=False):
             nl = "".join(nl).rstrip()
             bytes_out += len(nl)
             ns.append(nl)
-    ns = "\n".join(ns)
-    with open(fno, "w") as f:
-        f.write(ns)
     if verbose:
         print(
             "%s : %d bytes in / %d bytes out (%.1f%% saved)"
             % (fn, bytes_in, bytes_out, ((bytes_in - bytes_out) / bytes_in * 100.0))
         )
+    if as_str:
+        return ns
+    ns = "\n".join(ns)
+    with open(fno, "w") as f:
+        f.write(ns)

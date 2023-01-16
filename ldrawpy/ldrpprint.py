@@ -23,8 +23,22 @@
 #
 # LDraw pretty printer helper functions
 
+import string
+
 from rich import print
 from ldrawpy import *
+
+
+def is_hex_colour(text):
+    text = text.strip('"')
+    if not len(text) == 7:
+        return False
+    if not text[0] == "#":
+        return False
+    hs = text.lstrip("#")
+    if not all(c in string.hexdigits for c in hs):
+        return False
+    return True
 
 
 def pprint_ldr_colour(code):
@@ -48,13 +62,13 @@ def pprint_line1(line):
     s.append("[bold white]%s" % (ls[0]))
     s.append("%s" % (pprint_ldr_colour(ls[1])))
     s.append(pprint_coord_str(ls[2:5]))
-    s.append(pprint_coord_str(ls[5:8], colour="[steel_blue1]"))
-    s.append(pprint_coord_str(ls[8:11], colour="[khaki1]"))
-    s.append(pprint_coord_str(ls[11:14], colour="[steel_blue1]"))
+    s.append(pprint_coord_str(ls[5:8], colour="[#91E3FF]"))
+    s.append(pprint_coord_str(ls[8:11], colour="[#FFF3AF]"))
+    s.append(pprint_coord_str(ls[11:14], colour="[#91E3FF]"))
     if line.lower().endswith(".ldr"):
-        s.append("[bold sea_green3]%s" % (" ".join(ls[14:])))
+        s.append("[bold #B7E67A]%s" % (" ".join(ls[14:])))
     else:
-        s.append("[bold dark_orange]%s" % (" ".join(ls[14:])))
+        s.append("[bold #F27759]%s" % (" ".join(ls[14:])))
     return " ".join(s)
 
 
@@ -65,11 +79,11 @@ def pprint_line2345(line):
     s.append("[bold white]%s" % (ls[0]))
     s.append("%s" % (pprint_ldr_colour(ls[1])))
     s.append(pprint_coord_str(ls[2:5]))
-    s.append(pprint_coord_str(ls[5:8], colour="[steel_blue1]"))
+    s.append(pprint_coord_str(ls[5:8], colour="[#91E3FF]"))
     if len(ls) > 8:
-        s.append(pprint_coord_str(ls[8:11], colour="[khaki1]"))
+        s.append(pprint_coord_str(ls[8:11], colour="[#FFF3AF]"))
     if len(ls) > 11:
-        s.append(pprint_coord_str(ls[8:11], colour="[steel_blue1]"))
+        s.append(pprint_coord_str(ls[8:11], colour="[#91E3FF]"))
     return " ".join(s)
 
 
@@ -80,24 +94,26 @@ def pprint_line0(line):
     if ls[1] in LDRAW_TOKENS or ls[1] in META_TOKENS or ls[1].startswith("!"):
         s.append("[bold white]%s[not bold]" % (ls[0]))
         if "FILE" in ls[1]:
-            s.append("[bold sea_green3]%s[not bold]" % (ls[1]))
+            s.append("[bold #B7E67A]%s[not bold]" % (ls[1]))
         elif ls[1].startswith("!"):
-            s.append("[bold cyan]%s[not bold]" % (ls[1]))
+            s.append("[bold #78D4FE]%s[not bold]" % (ls[1]))
         elif ls[1] in META_TOKENS:
-            s.append("[bold medium_orchid]%s[not bold]" % (ls[1]))
+            s.append("[bold #BA7AE4]%s[not bold]" % (ls[1]))
         else:
-            s.append("[bold blue]%s[not bold]" % (ls[1]))
+            s.append("[bold #7096FF]%s[not bold]" % (ls[1]))
         if len(ls) > 2:
             if line.lower().endswith(".ldr"):
                 for e in ls[2:]:
-                    s.append("[bold sea_green3]%s" % (e))
+                    s.append("[bold #B7E67A]%s" % (e))
             elif line.lower().endswith(".dat"):
                 for e in ls[2:]:
-                    s.append("[bold dark_orange]%s" % (e))
+                    s.append("[bold #F27759]%s" % (e))
             else:
                 for e in ls[2:]:
                     if e in META_TOKENS:
-                        s.append("[bold medium_orchid]%s[not bold]" % (e))
+                        s.append("[bold #BA7AE4]%s[not bold]" % (e))
+                    elif is_hex_colour(e):
+                        s.append("[%s reverse]%s[not reverse]" % (e.strip('"'), e))
                     else:
                         s.append("[white]%s" % (e))
     else:
@@ -105,19 +121,23 @@ def pprint_line0(line):
     return " ".join(s)
 
 
-def pprint_line(line):
-    if len(line) < 1:
-        print("")
-        return
+def pprint_line(line, lineno=None, nocolour=False):
+    # if len(line) < 1:
+    #     print("")
+    #     return
     ls = line.split()
-    if len(ls) > 1:
+    s = []
+    if lineno is not None:
+        s.append("[#404040]%4d | " % (lineno))
+    if len(ls) > 1 and not nocolour:
         if ls[0] == "1":
-            print(pprint_line1(line))
+            s.append(pprint_line1(line))
         elif ls[0] == "0":
-            print(pprint_line0(line))
+            s.append(pprint_line0(line))
         elif any([ls[0] in "2345"]):
-            print(pprint_line2345(line))
+            s.append(pprint_line2345(line))
         else:
-            print("[white]%s" % (line.rstrip()))
-        return
-    print("[white]%s" % (line.rstrip()))
+            s.append("[white]%s" % (line.rstrip()))
+    else:
+        s.append("[white][not bold]%s" % (line.rstrip()))
+    print("".join(s))

@@ -23,8 +23,6 @@
 #
 # LDraw primitives
 
-import os
-import tempfile
 import hashlib
 
 from functools import reduce
@@ -181,9 +179,9 @@ class LDRPart:
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
-        if self.name != other.name:
+        if not self.name == other.name:
             return False
-        if self.attrib.colour != other.attrib.colour:
+        if not self.attrib.colour == other.attrib.colour:
             return False
         return True
 
@@ -200,15 +198,18 @@ class LDRPart:
         return shash.hexdigest()
 
     def is_identical(self, other):
-        if self.name != other.name:
+        if not self.name == other.name:
             return False
-        if self.attrib != other.attrib:
+        if not self.attrib == other.attrib:
             return False
         return True
 
-    def is_same(self, other, ignore_location=False, ignore_colour=False):
+    def is_same(self, other, ignore_location=False, ignore_colour=False, exact=False):
         if not self.name == other.name:
             return False
+        if exact:
+            if not self.sha1hash() == other.sha1hash():
+                return False
         if not ignore_colour:
             if not self.attrib.colour == other.attrib.colour:
                 return False

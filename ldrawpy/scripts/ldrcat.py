@@ -28,6 +28,13 @@ def main():
         default=False,
         help="Do not show file with colour syntax highlighting",
     )
+    parser.add_argument(
+        "-l",
+        "--lineno",
+        action="store_true",
+        default=False,
+        help="Show line numbers",
+    )
     args = parser.parse_args()
     argsd = vars(args)
 
@@ -39,11 +46,9 @@ def main():
     else:
         with open(argsd["filename"], "r") as f:
             lines = f.readlines()
-    for line in lines:
-        if argsd["nocolour"]:
-            print(line.rstrip())
-        else:
-            pprint_line(line)
+    for i, line in enumerate(lines):
+        lineno = (i + 1) if argsd["lineno"] else None
+        pprint_line(line, lineno, nocolour=argsd["nocolour"])
 
 
 if __name__ == "__main__":

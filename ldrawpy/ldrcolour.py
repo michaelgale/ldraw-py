@@ -23,7 +23,6 @@
 #
 # LDraw colour class
 
-import os
 import string
 
 from ldrawpy import *
@@ -107,6 +106,9 @@ class LDRColour(object):
 
     def as_tuple(self):
         return (self.r, self.g, self.b)
+
+    def as_bgr(self):
+        return (int(self.b * 255), int(self.g * 255), int(self.r * 255))
 
     def as_hex(self):
         return "%02X%02X%02X" % (

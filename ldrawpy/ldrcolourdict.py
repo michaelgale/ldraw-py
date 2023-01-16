@@ -277,6 +277,9 @@ LDR_COLOUR_NAME = {
     184: "Metallic Bright Red",
     186: "Metallic Dark Green",
     368: "Neon Yellow",
+    801: "Arrow Blue",
+    802: "Arrow Green",
+    804: "Arrow Red",
 }
 
 LDR_COLOUR_RGB = {
@@ -414,6 +417,9 @@ LDR_COLOUR_RGB = {
     184: "d60026",  #'Metallic Bright Red',
     186: "008e3c",  #'Metallic Dark Green'
     368: "EBD800",  # Neon Yellow
+    801: "0830FF",  # Arrow Blue
+    802: "08B010",  # Arrow Green
+    804: "FF0000",  # Arrow Red
 }
 
 LDR_COLOUR_TITLE = {

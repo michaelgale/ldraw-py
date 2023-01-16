@@ -27,7 +27,7 @@ import os
 import copy
 from math import sin, cos, pi
 from functools import reduce
-
+import rich
 from toolbox import *
 from ldrawpy import *
 
@@ -50,13 +50,13 @@ ARROW_PY = Matrix([[0, -1, 0], [0, 0, 1], [-1, 0, 0]])
 
 def value_after_token(tokens, value_token, x, xtype=int):
     for i, token in enumerate(tokens):
-        if token == value_token:
-            if (i + 1) < len(tokens):
-                try:
-                    v = xtype(tokens[i + 1])
-                    return v
-                except:
-                    return x
+        if not token == value_token or not (i + 1) < len(tokens):
+            continue
+        try:
+            v = xtype(tokens[i + 1])
+            return v
+        except ValueError:
+            return x
     return x
 
 
@@ -67,7 +67,7 @@ def norm_angle(angle):
 def vectorize(s):
     try:
         v = Vector(*(float(x) for x in s))
-    except:
+    except ValueError:
         return None
     return v
 
@@ -81,6 +81,7 @@ class ArrowContext:
         self.offset = Vector(0, 0, 0)
         self.rotstep = Vector(0, 0, 0)
         self.ratio = 0.5
+        self.outline_colour = 804
 
     def part_for_length(self, length):
         if length <= 2:
@@ -235,7 +236,6 @@ def arrows_for_step(arrow_ctx, step, as_lpub=True, only_arrows=False, as_dict=Fa
                 )
                 arrow_ratio = value_after_token(ls, "RATIO", arrow_ratio, float)
                 arrow_tilt = value_after_token(ls, "TILT", arrow_tilt, float)
-
                 if (
                     any(x in line for x in ["COLOUR", "LENGTH", "RATIO", "TILT"])
                     and not in_arrow

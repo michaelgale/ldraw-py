@@ -24,7 +24,6 @@
 # LDraw related helper functions
 
 import decimal
-import os, tempfile
 from toolbox import *
 from ldrawpy import *
 
@@ -49,14 +48,9 @@ def val_units(value, units="ldu"):
     It restricts the number of decimal places to 4 and minimizes
     redundant trailing zeros (as recommended by ldraw.org)
     """
-    x = 0.0
-    if units == "mm":
-        x = value * 2.5
-    else:
-        x = value
+    x = value * 2.5 if units == "mm" else value
     xs = "%.5f" % (x)
-    ns = str(quantize(xs))
-    ns = ns.replace("0E-4", "0.")
+    ns = str(quantize(xs)).replace("0E-4", "0.")
     if "E" not in ns:
         ns = ns.rstrip("0")
     ns = ns.rstrip(".")
@@ -69,10 +63,7 @@ def mat_str(m):
     """
     Writes the values of a matrix formatted by PUnits.
     """
-    s = []
-    for v in m:
-        s.append(val_units(v, "ldu"))
-    return "".join(s)
+    return "".join([val_units(v, "ldu") for v in m])
 
 
 def vector_str(p, attrib):
@@ -110,22 +101,17 @@ def ldrlist_from_parts(parts):
     from .ldrprimitives import LDRPart
 
     p = []
+    if isinstance(parts, str):
+        # assume its a string of LDraw lines of text
+        parts = parts.splitlines()
     if isinstance(parts, list):
         if len(parts) < 1:
-            return []
+            return p
         if isinstance(parts[0], LDRPart):
             p.extend(parts)
         else:
-            for e in parts:
-                lp = LDRPart()
-                if lp.from_str(e) is not None:
-                    p.append(lp)
-    else:
-        # build from a string of LDraw text
-        for e in parts.splitlines():
-            lp = LDRPart()
-            if lp.from_str(e) is not None:
-                p.append(lp)
+            p = [LDRPart().from_str(e) for e in parts]
+            p = [e for e in p if e is not None]
     return p
 
 
@@ -139,7 +125,7 @@ def ldrstring_from_list(parts):
         if isinstance(p, LDRPart):
             s.append(str(p))
         else:
-            if p[-1] != "\n":
+            if not p[-1] == "\n":
                 s.append(p + "\n")
             else:
                 s.append(p)
@@ -166,13 +152,28 @@ def merge_same_parts(parts, other, ignore_colour=False, as_str=False):
     return p
 
 
-def remove_parts_from_list(parts, other, as_str=False):
+def remove_parts_from_list(
+    parts, other, ignore_colour=True, ignore_location=True, exact=False, as_str=False
+):
     """Returns a list based on removing the parts from other from parts."""
     pp = ldrlist_from_parts(parts)
     op = ldrlist_from_parts(other)
     np = []
     for p in pp:
-        if not any([o.name == p.name for o in op]):
+        if ignore_colour and ignore_location:
+            if not any([o.name == p.name for o in op]):
+                np.append(p)
+        elif not any(
+            [
+                p.is_same(
+                    o,
+                    ignore_location=ignore_colour,
+                    ignore_colour=ignore_colour,
+                    exact=exact,
+                )
+                for o in op
+            ]
+        ):
             np.append(p)
     if as_str:
         return ldrstring_from_list(np)
@@ -193,10 +194,7 @@ def norm_angle(a):
 
 def norm_aspect(a):
     """Normalizes the three angle components of aspect angle to -180 ~ +180 deg."""
-    na = []
-    for v in a:
-        na.append(norm_angle(v))
-    return tuple(na)
+    return tuple([norm_angle(v) for v in a])
 
 
 def _flip_x(a):
@@ -204,13 +202,13 @@ def _flip_x(a):
 
 
 def _add_aspect(a, b):
-    new_aspect = (
-        a[0] + b[0],
-        a[1] + b[1],
-        a[2] + b[2],
+    return norm_aspect(
+        new_aspect=(
+            a[0] + b[0],
+            a[1] + b[1],
+            a[2] + b[2],
+        )
     )
-    new_aspect = norm_aspect(new_aspect)
-    return new_aspect
 
 
 def preset_aspect(current_aspect, aspect_change):
@@ -232,7 +230,6 @@ def preset_aspect(current_aspect, aspect_change):
         elif a == "up":
             if new_aspect[0] > 0:
                 new_aspect = (-35, new_aspect[1], new_aspect[2])
-
     return norm_aspect(new_aspect)
 
 

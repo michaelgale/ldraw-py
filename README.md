@@ -47,7 +47,9 @@ An example of the package can be seen below
 ## Requirements
 
 * Python 3.7+
-* toolbox-py
+* [toolbox-py][toolbox]
+
+[toolbox]: https://github.com/michaelgale/toolbox-py
 
 ## References
 

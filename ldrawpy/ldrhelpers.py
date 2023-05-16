@@ -232,6 +232,21 @@ def preset_aspect(current_aspect, aspect_change):
                 new_aspect = (-35, new_aspect[1], new_aspect[2])
     return norm_aspect(new_aspect)
 
+def clean_line(line):
+    sl = line.split()
+    nl = []
+    for i, s in enumerate(sl):
+        xs = s
+        if i > 0 and "_" not in s:
+            try:
+                x = float(s)
+                xs = val_units(float(x)).rstrip()
+            except ValueError:
+                pass
+        nl.append(xs)
+        nl.append(" ")
+    nl = "".join(nl).rstrip()
+    return nl
 
 def clean_file(fn, fno=None, verbose=False, as_str=False):
     """Cleans an LDraw file by changing all floating point numbers to
@@ -247,19 +262,20 @@ def clean_file(fn, fno=None, verbose=False, as_str=False):
         lines = f.readlines()
         for line in lines:
             bytes_in += len(line)
-            sl = line.split()
-            nl = []
-            for i, s in enumerate(sl):
-                xs = s
-                if i > 0 and "_" not in s:
-                    try:
-                        x = float(s)
-                        xs = val_units(float(x)).rstrip()
-                    except ValueError:
-                        pass
-                nl.append(xs)
-                nl.append(" ")
-            nl = "".join(nl).rstrip()
+            nl = clean_line(line)
+            # sl = line.split()
+            # nl = []
+            # for i, s in enumerate(sl):
+            #     xs = s
+            #     if i > 0 and "_" not in s:
+            #         try:
+            #             x = float(s)
+            #             xs = val_units(float(x)).rstrip()
+            #         except ValueError:
+            #             pass
+            #     nl.append(xs)
+            #     nl.append(" ")
+            # nl = "".join(nl).rstrip()
             bytes_out += len(nl)
             ns.append(nl)
     if verbose:

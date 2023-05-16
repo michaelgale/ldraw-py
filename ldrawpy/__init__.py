@@ -21,4 +21,4 @@ from .ldrshapes import *
 from .ldrmodel import LDRModel, parse_special_tokens, sort_parts, get_sha1_hash
 from .ldvrender import LDViewRender
 from .ldrarrows import ArrowContext, arrows_for_step, remove_offset_parts
-from .ldrpprint import pprint_line
+from .ldrpprint import pprint_line, clean_line, clean_file

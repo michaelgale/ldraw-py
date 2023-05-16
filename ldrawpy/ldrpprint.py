@@ -122,9 +122,6 @@ def pprint_line0(line):
 
 
 def pprint_line(line, lineno=None, nocolour=False):
-    # if len(line) < 1:
-    #     print("")
-    #     return
     ls = line.split()
     s = []
     if lineno is not None:

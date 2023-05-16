@@ -25,6 +25,7 @@
 
 import os, tempfile
 import datetime
+import subprocess, shlex
 import crayons
 from datetime import datetime
 from collections import defaultdict
@@ -59,6 +60,8 @@ LDVIEW_DICT = {
     "AutoCrop": 0,
     "LineSmoothing": 1,
     "Texmaps": 1,
+    "MemoryUsage": 2,
+    "MultiThreaded": 1,
 }
 # 10.0 / tan(0.005 deg)
 LDU_DISTANCE = 114591
@@ -96,8 +99,11 @@ class LDViewRender:
         "image_smooth": False,
         "no_lines": False,
         "wireframe": False,
-        "quality_lighting": False,
+        "quality_lighting": True,
+        "flat_shading": False,
+        "specular": True,
         "line_thickness": 3,
+        "texmaps": True,
         "scale": 1.0,
         "output_path": None,
         "log_output": True,
@@ -110,6 +116,7 @@ class LDViewRender:
         apply_params(self, kwargs)
         self.set_page_size(self.page_width, self.page_height)
         self.set_scale(self.scale)
+        self.settings_snapshot = None
 
     def __str__(self):
         s = []
@@ -128,6 +135,19 @@ class LDViewRender:
         s.append(" Camera distance: %d" % (self.cam_dist))
         return "\n".join(s)
 
+    def snapshot_settings(self):
+        self.settings_snapshot = {}
+        for key in ["page_width", "page_height", "auto_crop", "image_smooth", "no_lines", "wireframe", "quality_lighting", "scale",
+        "log_output", "log_level", "overwrite", "texmaps", "flat_shading", "specular"]:
+            self.settings_snapshot[key] = self.__dict__[key]
+
+    def restore_settings(self):
+        if self.settings_snapshot is None:
+            return
+        for key in ["page_width", "page_height", "auto_crop", "image_smooth", "no_lines", "wireframe", "quality_lighting", "scale",
+        "log_output", "log_level", "overwrite", "texmaps", "flat_shading", "specular"]:
+            self.__dict__[key] = self.settings_snapshot[key]
+
     def set_page_size(self, width, height):
         self.page_width = width
         self.page_height = height
@@ -137,6 +157,11 @@ class LDViewRender:
             self.pix_width,
             self.pix_height,
         )
+
+    def set_dpi(self, dpi):
+        self.dpi = dpi
+        self.set_page_size(width=self.page_width, height=self.page_height)
+        self.set_scale(scale=self.scale)
 
     def set_scale(self, scale):
         self.scale = scale
@@ -169,7 +194,7 @@ class LDViewRender:
 
     def render_from_file(self, ldrfile, outfile):
         """Render from an LDraw file."""
-        tstart = datetime.now()
+        tstart = datetime.datetime.now()
         if self.output_path is not None:
             path, name = split_path(outfile)
             oppath = full_path(self.output_path)
@@ -196,6 +221,12 @@ class LDViewRender:
                 value = self.line_thickness
             elif key == "UseQualityLighting":
                 value = 1 if self.quality_lighting else 0
+            elif key == "Texmaps":
+                value = 1 if self.texmaps else 0
+            elif key == "UseFlatShading":
+                value = 1 if self.flat_shading else 0
+            elif key == "UseSpecular":
+                value = 1 if self.specular else 0
             if self.no_lines:
                 if key == "EdgeThickness":
                     value = 0
@@ -211,7 +242,8 @@ class LDViewRender:
             ldv.append("-%s=%s" % (key, value))
         ldv.append(ldrfile)
         s = " ".join(ldv)
-        os.system(s)
+        args = shlex.split(s)
+        subprocess.Popen(args).wait()
         if self.log_output:
             _, fni = split_path(ldrfile)
             _, fno = split_path(filename)
@@ -226,7 +258,7 @@ class LDViewRender:
 
     def crop(self, filename):
         """Crop image file."""
-        tstart = datetime.now()
+        tstart = datetime.datetime.now()
         im = Image.open(filename)
         bg = Image.new(im.mode, im.size, im.getpixel((1, 1)))
         diff = ImageChops.difference(im, bg)
@@ -248,7 +280,7 @@ class LDViewRender:
 
     def smooth(self, filename):
         """Apply a smoothing filter to image file."""
-        tstart = datetime.now()
+        tstart = datetime.datetime.now()
         im = Image.open(filename)
         im = im.filter(ImageFilter.SMOOTH)
         im.save(filename)
